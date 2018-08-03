@@ -1,0 +1,250 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Lesson 6 : A list with relations &#8212; cute_mongo_forms 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Lesson 7 : Updating relations" href="lesson_7.html" />
+    <link rel="prev" title="Lesson 5 : Using relations" href="lesson_5.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lesson_7.html" title="Lesson 7 : Updating relations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="lesson_5.html" title="Lesson 5 : Using relations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorial.html" accesskey="U">Tutorial</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lesson-6-a-list-with-relations">
+<h1>Lesson 6 : A list with relations<a class="headerlink" href="#lesson-6-a-list-with-relations" title="Permalink to this headline">¶</a></h1>
+<p><strong>Download lesson</strong> <a class="reference download internal" href="_downloads/tutorial_6.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">[here]</span></code></a></p>
+<p>In this lesson, a collection of records is presented as a Qt list on the left and a form corresponding to an individual record is on the right, while user can interact with the form, create new entries, delete old ones and modify the existing ones.</p>
+<p>For persons of a certain type (“PersonRowExtended”), we can mark up their favorite foods from a list.  This is achieved with ListEditColumn (see below) that creates a relation from rows of type “PersonRowExtended” to the document collection listing different kinds of foods (“food_collection”).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="c1"># from PyQt5 import QtWidgets, QtCore, QtGui # Qt5</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="k">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.column</span> <span class="k">import</span> <span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">ListEditColumn</span><span class="p">,</span> <span class="n">CheckBoxColumn</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.row</span> <span class="k">import</span> <span class="n">ColumnSpec</span><span class="p">,</span> <span class="n">Row</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.container</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">FormSet</span><span class="p">,</span> <span class="n">EditFormSet</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.db</span> <span class="k">import</span> <span class="n">SimpleCollection</span>
+</pre></div>
+</div>
+<p>Databases, Row types, containers (FormSets, etc.) are all encapsulated into a single class that describes the data model</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DataModel</span><span class="p">:</span>
+
+
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">define</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">initDB</span><span class="p">()</span>
+
+  <span class="k">def</span> <span class="nf">define</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Define column patterns and databases</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">FoodRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;price&quot;</span><span class="p">,</span><span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Price&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">CheckBoxColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;spicy&quot;</span><span class="p">,</span><span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Is spicy&quot;</span><span class="p">)</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">FoodRow</span><span class="o">=</span><span class="n">FoodRow</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">food_collection</span> <span class="o">=</span><span class="n">SimpleCollection</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;food_test.db&quot;</span><span class="p">,</span><span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">FoodRow</span><span class="p">])</span>
+
+    <span class="k">class</span> <span class="nc">PersonRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;firstname&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;First Name&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;surname&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Surname&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Address&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">CheckBoxColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;married&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Is married&quot;</span><span class="p">)</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">PersonRow</span><span class="o">=</span><span class="n">PersonRow</span>
+
+    <span class="k">class</span> <span class="nc">PersonRowExtended</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;firstname&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;First Name&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;secondname&quot;</span><span class="p">,</span><span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Second Name&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;surname&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Surname&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Address&quot;</span><span class="p">),</span>
+        <span class="c1"># in the following, we&#39;re referring to self.food_collection and there, to the columns with keys &quot;_id&quot; and &quot;name&quot;.  The ListEditColumn itself is a list of foreign_keys</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ListEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;foods&quot;</span><span class="p">,</span>     <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Favorite foods&quot;</span><span class="p">,</span>  <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">food_collection</span><span class="p">,</span> <span class="n">foreign_label_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">PersonRowExtended</span><span class="o">=</span><span class="n">PersonRowExtended</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span><span class="n">SimpleCollection</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;simple_test.db&quot;</span><span class="p">,</span><span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="n">PersonRow</span><span class="p">,</span><span class="n">PersonRowExtended</span><span class="p">])</span>
+
+    <span class="k">class</span> <span class="nc">PersonList</span><span class="p">(</span><span class="n">List</span><span class="p">):</span>
+      <span class="k">def</span> <span class="nf">makeLabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">entry</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+          <span class="n">st</span><span class="o">=</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;firstname&quot;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;surname&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+          <span class="n">st</span><span class="o">=</span><span class="s2">&quot;?&quot;</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">PersonList</span><span class="o">=</span><span class="n">PersonList</span>
+
+
+  <span class="k">def</span> <span class="nf">initDB</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write some entries to databases</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PersonRow</span><span class="p">,{</span><span class="s2">&quot;firstname&quot;</span><span class="p">:</span><span class="s2">&quot;Paavo&quot;</span><span class="p">,</span>  <span class="s2">&quot;surname&quot;</span><span class="p">:</span><span class="s2">&quot;Vayrynen&quot;</span><span class="p">,</span>  <span class="s2">&quot;address&quot;</span><span class="p">:</span><span class="s2">&quot;Koukkusaarentie 1&quot;</span><span class="p">,</span> <span class="s2">&quot;married&quot;</span><span class="p">:</span><span class="kc">True</span><span class="p">}</span> <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PersonRow</span><span class="p">,{</span><span class="s2">&quot;firstname&quot;</span><span class="p">:</span><span class="s2">&quot;Martti&quot;</span><span class="p">,</span> <span class="s2">&quot;surname&quot;</span><span class="p">:</span><span class="s2">&quot;Ahtisaari&quot;</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">:</span><span class="s2">&quot;Lokkisaarentie 1&quot;</span><span class="p">,</span>  <span class="s2">&quot;married&quot;</span><span class="p">:</span><span class="kc">True</span><span class="p">}</span> <span class="p">)</span>
+
+    <span class="c1"># add some foods</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FoodRow</span><span class="p">,{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Hamburger&quot;</span><span class="p">,</span><span class="s2">&quot;price&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;spicy&quot;</span><span class="p">:</span><span class="kc">False</span><span class="p">})</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FoodRow</span><span class="p">,{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Hotdog&quot;</span><span class="p">,</span>   <span class="s2">&quot;price&quot;</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;spicy&quot;</span><span class="p">:</span><span class="kc">False</span><span class="p">})</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FoodRow</span><span class="p">,{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Freedom Fries&quot;</span><span class="p">,</span>   <span class="s2">&quot;price&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;spicy&quot;</span><span class="p">:</span><span class="kc">False</span><span class="p">})</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FoodRow</span><span class="p">,{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Bacalao&quot;</span><span class="p">,</span>   <span class="s2">&quot;price&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="s2">&quot;spicy&quot;</span><span class="p">:</span><span class="kc">False</span><span class="p">})</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FoodRow</span><span class="p">,{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Piparra&quot;</span><span class="p">,</span>   <span class="s2">&quot;price&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>  <span class="s2">&quot;spicy&quot;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
+
+    <span class="c1"># get ids of some foods ..</span>
+    <span class="n">bacalao</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">food_collection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Bacalao&quot;</span><span class="p">}))[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+    <span class="n">piparra</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">food_collection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Piparra&quot;</span><span class="p">}))[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PersonRowExtended</span><span class="p">,{</span><span class="s2">&quot;firstname&quot;</span><span class="p">:</span><span class="s2">&quot;Juho&quot;</span><span class="p">,</span> <span class="s2">&quot;secondname&quot;</span><span class="p">:</span><span class="s2">&quot;Kustaa&quot;</span><span class="p">,</span><span class="s2">&quot;surname&quot;</span><span class="p">:</span><span class="s2">&quot;Paasikivi&quot;</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">:</span><span class="s2">&quot;Kontulankaari 1&quot;</span><span class="p">,</span> <span class="s2">&quot;foods&quot;</span><span class="p">:[]</span> <span class="p">})</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PersonRowExtended</span><span class="p">,{</span><span class="s2">&quot;firstname&quot;</span><span class="p">:</span><span class="s2">&quot;Esko&quot;</span><span class="p">,</span> <span class="s2">&quot;secondname&quot;</span><span class="p">:</span><span class="s2">&quot;Iiro&quot;</span><span class="p">,</span>  <span class="s2">&quot;surname&quot;</span><span class="p">:</span><span class="s2">&quot;Seppänen&quot;</span><span class="p">,</span>  <span class="s2">&quot;address&quot;</span><span class="p">:</span><span class="s2">&quot;Mellunraitti 3&quot;</span><span class="p">,</span>  <span class="s2">&quot;foods&quot;</span><span class="p">:[</span><span class="n">bacalao</span><span class="p">,</span> <span class="n">piparra</span><span class="p">]</span> <span class="p">})</span>
+</pre></div>
+</div>
+<p>The main Qt program</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyGui</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+
+
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">MyGui</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">initVars</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">()</span>
+
+
+  <span class="k">def</span> <span class="nf">initVars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># Connect to db, define column patters (i.e. rows),</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_model</span><span class="o">=</span><span class="n">DataModel</span><span class="p">()</span>
+
+
+  <span class="k">def</span> <span class="nf">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRect</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">800</span><span class="p">,</span><span class="mi">800</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="c1"># Create a list</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lis</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_model</span><span class="o">.</span><span class="n">PersonList</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_model</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span>
+
+    <span class="c1"># Get lists&#39;s widget</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lis</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="c1"># Add to main layout</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lis</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="c1"># Create a group of forms</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">formset</span><span class="o">=</span><span class="n">EditFormSet</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_model</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span>
+
+    <span class="c1"># Get form&#39;s widget and set it&#39;s parent to the current main widget</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">formset</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="c1"># Add formset to layout</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formset</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="c1"># Inform formset about the item in question.  &quot;self.lis.widget&quot; is a QListWidget instance.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lis</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">currentItemChanged</span><span class="o">.</span> <span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formset</span><span class="o">.</span><span class="n">chooseForm_slot</span><span class="p">)</span>
+
+    <span class="c1"># inform list when a new record has been added or when a record has been saved</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">formset</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">new_record</span><span class="o">.</span>    <span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lis</span><span class="o">.</span><span class="n">update_slot</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">formset</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">save_record</span><span class="o">.</span>   <span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lis</span><span class="o">.</span><span class="n">update_slot</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Start the Qt program</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">):</span>
+  <span class="n">app</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">([])</span>
+  <span class="n">gui</span><span class="o">=</span><span class="n">MyGui</span><span class="p">()</span>
+  <span class="n">gui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+  <span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="lesson_5.html"
+                        title="previous chapter">Lesson 5 : Using relations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lesson_7.html"
+                        title="next chapter">Lesson 7 : Updating relations</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/lesson_6.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lesson_7.html" title="Lesson 7 : Updating relations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="lesson_5.html" title="Lesson 5 : Using relations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorial.html" >Tutorial</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2018 Sampsa Riikonen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,2 @@
+graft docs
+include cute_mongo_forms/data/some_auxiliary_file

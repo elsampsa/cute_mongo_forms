@@ -1,0 +1,423 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cute_mongo_forms.row.base &#8212; cute_mongo_forms 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cute_mongo_forms.row.base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">base.py    : The Row class</span>
+
+<span class="sd">* Copyright: 2017-2018 Sampsa Riikonen</span>
+<span class="sd">* Authors  : Sampsa Riikonen</span>
+<span class="sd">* Date     : 2017</span>
+<span class="sd">* Version  : 0.1</span>
+
+<span class="sd">This file is part of the cute_mongo_forms library</span>
+
+<span class="sd">License: LGPLv3+ (see the COPYING.LESSER file)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># from PyQt5 import QtWidgets, QtCore, QtGui # Qt5</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="k">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.tools</span> <span class="k">import</span> <span class="n">typeCheck</span><span class="p">,</span> <span class="n">dictionaryCheck</span><span class="p">,</span> <span class="n">objectCheck</span><span class="p">,</span> <span class="n">parameterInitCheck</span><span class="p">,</span> <span class="n">noCheck</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.column.base</span> <span class="k">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">LineEditColumn</span>
+<span class="n">pre_mod</span> <span class="o">=</span> <span class="s2">&quot;cute_mongo_forms.row.base : &quot;</span> <span class="c1"># a string for aux debuggin purposes</span>
+<span class="n">verbose</span><span class="o">=</span><span class="kc">False</span> <span class="c1"># module&#39;s verbosity</span>
+
+
+<span class="k">class</span> <span class="nc">ColumnSpec</span><span class="p">:</span>
+  
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">column_class</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">column_class</span><span class="o">=</span><span class="n">column_class</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>      <span class="o">=</span><span class="n">kwargs</span>
+    
+    
+  <span class="k">def</span> <span class="nf">instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_class</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+    
+    
+    
+<span class="k">class</span> <span class="nc">RowWatcher</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">clsdict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mro</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+      <span class="c1"># print(&quot;was subclassed by &quot; + name +&quot; &quot;+cls.__name__)</span>
+      <span class="bp">cls</span><span class="o">.</span><span class="n">genKeys</span><span class="p">()</span>
+      <span class="c1"># print(cls.keys)</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">RowWatcher</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">clsdict</span><span class="p">)</span>
+  
+    
+
+<div class="viewcode-block" id="Row"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row">[docs]</a><span class="k">class</span> <span class="nc">Row</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">RowWatcher</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Defines a common columns structure for documents in a [document database] collection.  The column structure (i.e. &quot;Row&quot;) is defined in the child class header like this:</span>
+<span class="sd">  </span>
+<span class="sd">  ::</span>
+<span class="sd">  </span>
+<span class="sd">    columns=[</span>
+<span class="sd">      ColumnSpec(LineEditColumn, key_name=&quot;firstname&quot;, label_name=&quot;First Name&quot;),</span>
+<span class="sd">      ...</span>
+<span class="sd">    ]</span>
+<span class="sd">  </span>
+<span class="sd">  This class knows how to create a Qt form, corresponding to the column structure</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">columns</span><span class="o">=</span><span class="p">[]</span>
+
+  <span class="n">parameter_defs</span><span class="o">=</span><span class="p">{}</span>
+  
+  <span class="n">keys</span><span class="o">=</span><span class="p">[]</span>       <span class="c1"># filled by first call to getKeys</span>
+  <span class="n">keyset</span><span class="o">=</span><span class="kc">None</span>   <span class="c1"># re-generated each time you call &quot;class Classname(Row) ..&quot;.  Why this?  We need the &quot;keyset&quot; at class level, not at object level</span>
+  
+  
+<div class="viewcode-block" id="Row.genKeys"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.genKeys">[docs]</a>  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">genKeys</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This is called when you declare the class, i.e. at &quot;Class MyNewRow(Row) ...&quot;.  It updates the class variables &quot;keys&quot; and &quot;keyset&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">keys</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span> <span class="c1"># ColumnSpec instances </span>
+      <span class="bp">cls</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;key_name&quot;</span><span class="p">])</span> <span class="c1"># remember.. ColumnSpec has kwargs thats going to be passed to each column when they&#39;re instantiated.  &quot;key_name&quot; has the name of the column key.</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">keyset</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">keys</span><span class="p">)</span></div>
+      
+      
+  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">genChecker</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">pass</span>
+    <span class="sd">&quot;&quot;&quot; # TODO associated &quot;orm&quot; class for programmatic (i.e. non-widget) manipulation of the underlying database: we want to check that what we write to database is correct</span>
+<span class="sd">  </span>
+<span class="sd">    class RowCheck: # </span>
+<span class="sd">  </span>
+<span class="sd">      def __init__(self):</span>
+<span class="sd">        for col in cls.columns:</span>
+<span class="sd">            pass</span>
+<span class="sd">        # or ..</span>
+<span class="sd">        for key, column in column_by_name.items()</span>
+<span class="sd">          self.column_check_by_name[key] =column.ColumnCheck() # ColumnCheck instance.  Houses a copy of the value.</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">      def __getattr__(self,key):</span>
+<span class="sd">        # classname and _id must be handled separately</span>
+<span class="sd">        # _id is saved as an attribute of RowCheck</span>
+<span class="sd">        # classname should be a constant</span>
+<span class="sd">        column_check=self.column_check_by_name[key]</span>
+<span class="sd">        return column_check.get()</span>
+<span class="sd">      </span>
+<span class="sd">      </span>
+<span class="sd">      def __setattr__(self,key):</span>
+<span class="sd">        column_check=self.column_check_by_name[key]</span>
+<span class="sd">        column_check.set(value)</span>
+<span class="sd">      </span>
+<span class="sd">    cls.RowCheck=RowCheck</span>
+<span class="sd">      </span>
+<span class="sd">        </span>
+<span class="sd">    obj=Row.jsonToObj(doc) # instantiates and returns a new RowCheck object </span>
+<span class="sd">    # </span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    value=obj.key1   =&gt; returns value (from RowCheck.column_check_by_name[key1].value == ColumnCheck.value)</span>
+<span class="sd">    obj.key1=value   =&gt; perform the check =&gt; if ok, value goes into RowCheck.column_check_by_name[key1] == ColumnCheck.value</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    class ColumnCheck: # internal class of each Column class</span>
+<span class="sd">    </span>
+<span class="sd">      def __init__(self):</span>
+<span class="sd">        self.value=default_value</span>
+<span class="sd">        </span>
+<span class="sd">      def get(self):</span>
+<span class="sd">        return self.value # always correct, of course..</span>
+<span class="sd">        </span>
+<span class="sd">      def set(self,value):</span>
+<span class="sd">        # perform type and limits check here</span>
+<span class="sd">        self.value=value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+      
+      
+      
+  
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">+</span><span class="s2">&quot; : &quot;</span> <span class="c1"># auxiliary string for debugging output</span>
+    <span class="n">parameterInitCheck</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_defs</span><span class="p">,</span><span class="n">kwargs</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span> <span class="c1"># check kwargs agains parameter_defs, attach ok&#39;d parameters to this object as attributes</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">initColumns</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">makeWidget</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">customInit</span><span class="p">()</span>
+    
+    
+  <span class="k">def</span> <span class="nf">customInit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span>
+    
+  
+  <span class="k">def</span> <span class="nf">initColumns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># find class variables ..</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="o">=</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="c1"># self.columns_=[] # list of tuples: name, label, instance</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">columns_</span><span class="o">=</span><span class="p">[]</span> <span class="c1"># now just a list of column instances</span>
+  
+    <span class="k">for</span> <span class="n">column_def</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+      <span class="n">col_instance</span><span class="o">=</span><span class="n">column_def</span><span class="o">.</span><span class="n">instantiate</span><span class="p">()</span> <span class="c1"># instantiate the column</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="p">[</span><span class="n">col_instance</span><span class="o">.</span><span class="n">key_name</span><span class="p">]</span><span class="o">=</span><span class="n">col_instance</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">columns_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col_instance</span><span class="p">)</span>
+      
+      
+  <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+      <span class="n">column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+      <span class="k">raise</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;No such column &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)))</span>
+      <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">column</span>
+    
+    
+  <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+      <span class="n">column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+      <span class="k">raise</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;No such column &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)))</span>
+      <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">column</span>
+    
+    
+  <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">st</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="n">st</span><span class="o">+=</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">getValue</span><span class="p">())</span><span class="o">+</span><span class="s2">&quot; &quot;</span>
+    <span class="k">return</span> <span class="n">st</span>
+  
+  
+  <span class="k">def</span> <span class="nf">__collect__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Collect dictionary from QWidgets</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dic</span><span class="o">=</span><span class="p">{}</span> <span class="c1"># this will be written to db</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="n">dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">=</span><span class="n">column</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span>
+    <span class="c1"># dic[&quot;classname&quot;]=self.__class__.__name__ # not here, but in collection</span>
+    <span class="k">return</span> <span class="n">dic</span>
+    
+    
+<div class="viewcode-block" id="Row.new"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.new">[docs]</a>  <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;New entry to collection</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__collect__</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span><span class="n">dic</span><span class="p">)</span></div>
+    
+  
+<div class="viewcode-block" id="Row.update"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.update">[docs]</a>  <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">,</span><span class="n">_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Save from QtWidgets to collection</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dic</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__collect__</span><span class="p">()</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">_id</span>
+    <span class="c1"># print(self.pre,&quot;update&quot;,dic)</span>
+    <span class="n">collection</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span><span class="n">dic</span><span class="p">)</span></div>
+    
+    
+<div class="viewcode-block" id="Row.delete"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.delete">[docs]</a>  <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">,</span><span class="n">_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Delete a record</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">collection</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span></div>
+    
+    
+  <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="n">column</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    
+    
+<div class="viewcode-block" id="Row.get"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.get">[docs]</a>  <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">,</span><span class="n">_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load one entry from db to QtWidgets</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">it</span> <span class="o">=</span><span class="n">collection</span><span class="o">.</span><span class="n">get</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span><span class="n">_id</span><span class="p">})</span> <span class="c1"># there should be only one ..</span>
+    <span class="k">try</span><span class="p">:</span>
+      <span class="n">res</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+      <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span><span class="s2">&quot;get : Could not get _id=&quot;</span><span class="p">,</span><span class="n">_id</span><span class="p">)</span>
+      <span class="k">return</span>
+    
+    <span class="c1"># print(self.pre,&quot;get&quot;,res)</span>
+    
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="n">val</span><span class="o">=</span><span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span><span class="s2">&quot;get : WARNING : record does not have column&quot;</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="s2">&quot;full record=&quot;</span><span class="p">,</span><span class="n">res</span><span class="p">)</span>
+        <span class="n">column</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">column</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+    
+    
+<div class="viewcode-block" id="Row.set_"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.set_">[docs]</a>  <span class="k">def</span> <span class="nf">set_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dic</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the widget values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="n">val</span><span class="o">=</span><span class="n">dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span><span class="s2">&quot;get : WARNING : record does not have column&quot;</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="s2">&quot;full record=&quot;</span><span class="p">,</span><span class="n">res</span><span class="p">)</span>
+        <span class="n">column</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">column</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+    
+   
+<div class="viewcode-block" id="Row.makeWidget"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.makeWidget">[docs]</a>  <span class="k">def</span> <span class="nf">makeWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a Qt form, using the column structure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span>   <span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    for key in self.column_by_name:</span>
+<span class="sd">      print(self.pre,&quot;makeWidget: &gt;&gt;&quot;,key)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns_</span><span class="p">):</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">widget</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># labelname  =col[1]</span>
+        <span class="c1"># column     =col[2] # the instance</span>
+        <span class="n">labelname</span>    <span class="o">=</span><span class="n">column</span><span class="o">.</span><span class="n">label_name</span>
+        
+        <span class="n">label</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="n">labelname</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+        <span class="n">column</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+        <span class="c1"># add to the layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">label</span><span class="p">,</span>        <span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">widget</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span></div>
+    
+        <span class="c1"># print(self.pre,&quot;makeWidget :&quot;,labelname,label,column.widget)</span>
+    
+    
+<div class="viewcode-block" id="Row.updateWidget"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.updateWidget">[docs]</a>  <span class="k">def</span> <span class="nf">updateWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Updates the widgets.  This is necessary if columns relate to documents that have been changed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="n">column</span><span class="o">.</span><span class="n">updateWidget</span><span class="p">()</span></div>
+    
+    
+  <span class="k">def</span> <span class="nf">purge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">verbose</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span><span class="s2">&quot;purge&quot;</span><span class="p">,</span><span class="n">dic</span><span class="p">)</span>
+    <span class="c1"># uses self.keyset</span>
+    <span class="n">needs_update</span><span class="o">=</span><span class="kc">False</span>
+    <span class="n">tmpdic</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+    <span class="n">tmpdic</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">);</span> <span class="n">tmpdic</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;classname&quot;</span><span class="p">)</span> <span class="c1"># remove metadata</span>
+    <span class="n">dicset</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">tmpdic</span><span class="p">)</span>   <span class="c1"># fields in the record to be checked</span>
+    <span class="c1"># the document record has extra fields:</span>
+    <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dicset</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keyset</span><span class="p">):</span> <span class="c1"># dicset-keyset = extra keys in dicset</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">verbose</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span><span class="s2">&quot;purge : removing key&quot;</span><span class="p">,</span><span class="n">df</span><span class="p">,</span><span class="s2">&quot;from&quot;</span><span class="p">,</span><span class="n">dic</span><span class="p">)</span>
+      <span class="n">dic</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="c1"># remove fields from the record</span>
+      <span class="n">needs_update</span><span class="o">=</span><span class="kc">True</span>
+    <span class="c1"># the document record is missing fields:</span>
+    <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keyset</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">dicset</span><span class="p">):</span> <span class="c1"># keyset-dicset = keyset has more keys</span>
+      <span class="n">dic</span><span class="p">[</span><span class="n">df</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="p">[</span><span class="n">df</span><span class="p">]</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span> <span class="c1"># gets the default value</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">verbose</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span><span class="s2">&quot;purge : appending key/value&quot;</span><span class="p">,</span><span class="n">df</span><span class="p">,</span><span class="n">dic</span><span class="p">[</span><span class="n">df</span><span class="p">],</span><span class="s2">&quot;full record now=&quot;</span><span class="p">,</span><span class="n">dic</span><span class="p">)</span>
+      <span class="n">needs_update</span><span class="o">=</span><span class="kc">True</span>
+    <span class="c1"># by now the document should be consistent with the schema in self.keys</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span> <span class="c1"># run through all key value pairs</span>
+      <span class="n">col</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="n">update</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">col</span><span class="o">.</span><span class="n">purge</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="c1"># purge dangling foreign key references.  Return valid reference(s) in val</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">update</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">verbose</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="p">,</span><span class="s2">&quot;purge : updated value in key&quot;</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="s2">&quot;to&quot;</span><span class="p">,</span><span class="n">val</span><span class="p">)</span>
+        <span class="n">dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>    <span class="o">=</span><span class="n">val</span>
+        <span class="n">needs_update</span><span class="o">=</span><span class="kc">True</span>
+      
+    <span class="k">return</span> <span class="n">needs_update</span><span class="p">,</span> <span class="n">dic</span></div>
+    
+    
+  
+<span class="k">def</span> <span class="nf">test1</span><span class="p">():</span>
+  <span class="n">st</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Empty test</span>
+<span class="s2">  &quot;&quot;&quot;</span>
+  <span class="n">pre</span><span class="o">=</span><span class="n">pre_mod</span><span class="o">+</span><span class="s2">&quot;test1 :&quot;</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">pre</span><span class="p">,</span><span class="n">st</span><span class="p">)</span>
+  
+
+<span class="k">def</span> <span class="nf">test2</span><span class="p">():</span>
+  <span class="n">st</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Empty test</span>
+<span class="s2">  &quot;&quot;&quot;</span>
+  <span class="n">pre</span><span class="o">=</span><span class="n">pre_mod</span><span class="o">+</span><span class="s2">&quot;test2 :&quot;</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">pre</span><span class="p">,</span><span class="n">st</span><span class="p">)</span>
+  
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+  <span class="n">pre</span><span class="o">=</span><span class="n">pre_mod</span><span class="o">+</span><span class="s2">&quot;main :&quot;</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">pre</span><span class="p">,</span><span class="s2">&quot;main: arguments: &quot;</span><span class="p">,</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pre</span><span class="p">,</span><span class="s2">&quot;main: needs test number&quot;</span><span class="p">)</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">st</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;()&quot;</span>
+    <span class="n">exec</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+  
+  
+<span class="k">if</span> <span class="p">(</span><span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">):</span>
+  <span class="n">main</span><span class="p">()</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2018 Sampsa Riikonen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+    </div>
+  </body>
+</html>

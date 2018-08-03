@@ -1,0 +1,267 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Lesson 5 : Using relations &#8212; cute_mongo_forms 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Lesson 6 : A list with relations" href="lesson_6.html" />
+    <link rel="prev" title="Lesson 4 : GUI/Database interaction" href="lesson_4.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lesson_6.html" title="Lesson 6 : A list with relations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="lesson_4.html" title="Lesson 4 : GUI/Database interaction"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorial.html" accesskey="U">Tutorial</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="lesson-5-using-relations">
+<h1>Lesson 5 : Using relations<a class="headerlink" href="#lesson-5-using-relations" title="Permalink to this headline">¶</a></h1>
+<p><strong>Download lesson</strong> <a class="reference download internal" href="_downloads/tutorial_5.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">[here]</span></code></a></p>
+<p>In this lesson we use a simple relation.</p>
+<p>We create a user rights scheme for persons wishing to use some resources - cars in this case.  The collection schema looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">person_collection</span>           <span class="n">link_collection</span>            <span class="n">car_collection</span>
+<span class="o">+--------------------+</span>      <span class="o">+------------------+</span>      <span class="o">+--------------------+</span>
+<span class="o">|</span>  <span class="n">_id</span>               <span class="o">|&lt;-+</span>   <span class="o">|</span>  <span class="n">_id</span>             <span class="o">|</span>   <span class="o">+-&gt;|</span> <span class="n">_id</span>                <span class="o">|</span>
+<span class="o">|</span>  <span class="n">name</span>              <span class="o">|</span>  <span class="o">+---|</span>  <span class="n">user_key</span>        <span class="o">|</span>   <span class="o">|</span>  <span class="o">|</span> <span class="n">brand</span>              <span class="o">|</span>
+<span class="o">|</span>  <span class="n">surname</span>           <span class="o">|</span>      <span class="o">|</span>  <span class="n">car_key</span>         <span class="o">|---+</span>  <span class="o">|</span> <span class="n">year</span>               <span class="o">|</span>
+<span class="o">|</span>                    <span class="o">|</span>      <span class="o">|</span>  <span class="n">drive</span>           <span class="o">|</span>      <span class="o">|</span>                    <span class="o">|</span>
+<span class="o">|</span>                    <span class="o">|</span>      <span class="o">|</span>  <span class="n">sell</span>            <span class="o">|</span>      <span class="o">|</span>                    <span class="o">|</span>
+<span class="o">+--------------------+</span>      <span class="o">+------------------+</span>      <span class="o">+--------------------+</span>
+</pre></div>
+</div>
+<p>An entry in the link_collection gives a person the right to use a certain car.</p>
+<p>In the user interface, user can choose a person and a car and grant user rights by pressing the “NEW” button on the right.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="c1"># from PyQt5 import QtWidgets, QtCore, QtGui # Qt5</span>
+<span class="kn">from</span> <span class="nn">PySide2</span> <span class="k">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.column</span> <span class="k">import</span> <span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">ComboBoxColumn</span><span class="p">,</span> <span class="n">ForeignKeyColumn</span><span class="p">,</span> <span class="n">CheckBoxColumn</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.row</span> <span class="k">import</span> <span class="n">ColumnSpec</span><span class="p">,</span> <span class="n">Row</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.container</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">FormSet</span><span class="p">,</span> <span class="n">EditFormSet</span><span class="p">,</span> <span class="n">PermissionFormSet</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.db</span> <span class="k">import</span> <span class="n">SimpleCollection</span>
+</pre></div>
+</div>
+<p>Create the column patters (Rows) for each collection.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PersonRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+  <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;First Name&quot;</span><span class="p">),</span>
+    <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;surname&quot;</span><span class="p">,</span><span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Last Name&quot;</span><span class="p">)</span>
+  <span class="p">]</span>
+
+<span class="n">person_collection</span><span class="o">=</span><span class="n">SimpleCollection</span><span class="p">(</span>
+  <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;persons.db&quot;</span><span class="p">,</span>
+  <span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="n">PersonRow</span><span class="p">]</span>
+  <span class="p">)</span>
+<span class="n">person_collection</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">CarRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+  <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;brand&quot;</span><span class="p">,</span><span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Brand&quot;</span><span class="p">),</span>
+    <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Year&quot;</span><span class="p">)</span>
+  <span class="p">]</span>
+
+<span class="n">car_collection</span><span class="o">=</span><span class="n">SimpleCollection</span><span class="p">(</span>
+  <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;cars.db&quot;</span><span class="p">,</span>
+  <span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="n">CarRow</span><span class="p">]</span>
+  <span class="p">)</span>
+<span class="n">car_collection</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here we are referencing to foreign keys.  The <em>ForeignKeyColumn</em> column type is a special column that’s not visualized in the form widget (“label_name” is missing).  It’s only used for referencing records in other collections:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">LinkRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+  <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ForeignKeyColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;user_key&quot;</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">person_collection</span><span class="p">),</span>
+    <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ForeignKeyColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;car_key&quot;</span><span class="p">,</span>  <span class="n">collection</span><span class="o">=</span><span class="n">car_collection</span><span class="p">),</span>
+    <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">CheckBoxColumn</span><span class="p">,</span>   <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;drive&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Can drive&quot;</span><span class="p">),</span>
+    <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">CheckBoxColumn</span><span class="p">,</span>   <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;sell&quot;</span><span class="p">,</span>  <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Can sell&quot;</span><span class="p">)</span>
+  <span class="p">]</span>
+
+<span class="n">link_collection</span><span class="o">=</span><span class="n">SimpleCollection</span><span class="p">(</span>
+  <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;links.db&quot;</span><span class="p">,</span>
+  <span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="n">LinkRow</span><span class="p">]</span>
+  <span class="p">)</span>
+<span class="n">link_collection</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Create lists and forms for each collection.</p>
+<p>In Lists, just define how a record is visualized in the list.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PersonList</span><span class="p">(</span><span class="n">List</span><span class="p">):</span>
+  <span class="k">def</span> <span class="nf">makeLabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">entry</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;surname&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s2">&quot;?&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">CarList</span><span class="p">(</span><span class="n">List</span><span class="p">):</span>
+  <span class="k">def</span> <span class="nf">makeLabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">entry</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;brand&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+      <span class="k">return</span> <span class="s2">&quot;?&quot;</span>
+</pre></div>
+</div>
+<p>The main Qt program.  PermissionFormSet is a special FormSet class for handling rights through link tables.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyGui</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+
+
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">MyGui</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">initVars</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">()</span>
+
+
+  <span class="k">def</span> <span class="nf">initVars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># add persons to the collection</span>
+    <span class="n">person_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">PersonRow</span><span class="p">,{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Antti&quot;</span><span class="p">,</span><span class="s2">&quot;surname&quot;</span><span class="p">:</span><span class="s2">&quot;Mykkanen&quot;</span><span class="p">})</span>
+    <span class="n">person_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">PersonRow</span><span class="p">,{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Jonne&quot;</span><span class="p">,</span><span class="s2">&quot;surname&quot;</span><span class="p">:</span><span class="s2">&quot;Paananen&quot;</span><span class="p">})</span>
+    <span class="n">person_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">PersonRow</span><span class="p">,{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Juho&quot;</span><span class="p">,</span> <span class="s2">&quot;surname&quot;</span><span class="p">:</span><span class="s2">&quot;Kokkonen&quot;</span><span class="p">})</span>
+    <span class="n">person_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">PersonRow</span><span class="p">,{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Janne&quot;</span><span class="p">,</span><span class="s2">&quot;surname&quot;</span><span class="p">:</span><span class="s2">&quot;Suhonen&quot;</span> <span class="p">})</span>
+
+    <span class="c1"># add cars to the collection</span>
+    <span class="n">car_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">CarRow</span><span class="p">,{</span><span class="s2">&quot;brand&quot;</span><span class="p">:</span><span class="s2">&quot;Ford&quot;</span><span class="p">,</span><span class="s2">&quot;year&quot;</span><span class="p">:</span><span class="mi">2000</span><span class="p">})</span>
+    <span class="n">car_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">CarRow</span><span class="p">,{</span><span class="s2">&quot;brand&quot;</span><span class="p">:</span><span class="s2">&quot;Audi&quot;</span><span class="p">,</span><span class="s2">&quot;year&quot;</span><span class="p">:</span><span class="mi">1996</span><span class="p">})</span>
+    <span class="n">car_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">CarRow</span><span class="p">,{</span><span class="s2">&quot;brand&quot;</span><span class="p">:</span><span class="s2">&quot;Seat&quot;</span><span class="p">,</span><span class="s2">&quot;year&quot;</span><span class="p">:</span><span class="mi">2004</span><span class="p">})</span>
+    <span class="n">car_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">CarRow</span><span class="p">,{</span><span class="s2">&quot;brand&quot;</span><span class="p">:</span><span class="s2">&quot;Yugo&quot;</span><span class="p">,</span><span class="s2">&quot;year&quot;</span><span class="p">:</span><span class="mi">1985</span><span class="p">})</span>
+    <span class="n">car_collection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">CarRow</span><span class="p">,{</span><span class="s2">&quot;brand&quot;</span><span class="p">:</span><span class="s2">&quot;BMW&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">:</span><span class="mi">2016</span><span class="p">})</span>
+
+
+  <span class="k">def</span> <span class="nf">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># self.setGeometry(QtCore.QRect(100,100,800,800))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="c1"># List view of person_collection</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">person_lis</span><span class="o">=</span><span class="n">PersonList</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="n">person_collection</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">person_lis</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person_lis</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="c1"># Form views of individual records in the person_collection</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">person_form</span><span class="o">=</span><span class="n">FormSet</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="n">person_collection</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">person_form</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person_form</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="c1"># List view of car_collection</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">car_lis</span><span class="o">=</span><span class="n">CarList</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="n">car_collection</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">car_lis</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">car_lis</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="c1"># Form view of records in car_collection</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">car_form</span><span class="o">=</span><span class="n">FormSet</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="n">car_collection</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">car_form</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">car_form</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="c1"># Form view of the Link table</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">permission_form</span><span class="o">=</span><span class="n">PermissionFormSet</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="n">link_collection</span><span class="p">,</span> <span class="n">key1_name</span><span class="o">=</span><span class="s2">&quot;user_key&quot;</span><span class="p">,</span> <span class="n">key2_name</span><span class="o">=</span><span class="s2">&quot;car_key&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">permission_form</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permission_form</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="c1"># Create connections between list views, forms, etc.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">person_lis</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span> <span class="n">currentItemChanged</span><span class="o">.</span> <span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person_form</span><span class="o">.</span><span class="n">chooseForm_slot</span><span class="p">)</span> <span class="c1"># inform person formset about the item in question</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">car_lis</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span>    <span class="n">currentItemChanged</span><span class="o">.</span> <span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">car_form</span><span class="o">.</span>   <span class="n">chooseForm_slot</span><span class="p">)</span> <span class="c1"># inform car formset about the item in question</span>
+
+    <span class="c1"># Connect the user/car pair to the permission form</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">person_lis</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span> <span class="n">currentItemChanged</span><span class="o">.</span> <span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permission_form</span><span class="o">.</span><span class="n">chooseRecord1_slot</span><span class="p">)</span> <span class="c1"># inform formset about the item in question</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">car_lis</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span>    <span class="n">currentItemChanged</span><span class="o">.</span> <span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">permission_form</span><span class="o">.</span><span class="n">chooseRecord2_slot</span><span class="p">)</span> <span class="c1"># inform formset about the item in question</span>
+</pre></div>
+</div>
+<p>Start the main Qt program</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">):</span>
+  <span class="n">app</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">([])</span>
+  <span class="n">gui</span><span class="o">=</span><span class="n">MyGui</span><span class="p">()</span>
+  <span class="n">gui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+  <span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="lesson_4.html"
+                        title="previous chapter">Lesson 4 : GUI/Database interaction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lesson_6.html"
+                        title="next chapter">Lesson 6 : A list with relations</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/lesson_5.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lesson_6.html" title="Lesson 6 : A list with relations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="lesson_4.html" title="Lesson 4 : GUI/Database interaction"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorial.html" >Tutorial</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2018 Sampsa Riikonen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+    </div>
+  </body>
+</html>

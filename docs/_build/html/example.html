@@ -1,0 +1,242 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Example &#8212; cute_mongo_forms 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Submodule documentation" href="submodules.html" />
+    <link rel="prev" title="Now what?" href="tutorial_epi.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="submodules.html" title="Submodule documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial_epi.html" title="Now what?"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="example">
+<span id="id1"></span><h1>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="running-the-example">
+<h2>Running the example<a class="headerlink" href="#running-the-example" title="Permalink to this headline">¶</a></h2>
+<p>You can try this example like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipython3</span>
+<span class="kn">from</span> <span class="nn">cute_mongo_forms.example</span> <span class="k">import</span> <span class="n">main</span>
+<span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can find the example’s source code with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipython3</span>
+<span class="kn">import</span> <span class="nn">cute_mongo_forms</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cute_mongo_forms</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-problem-parking-area-control">
+<h2>The problem: parking area control<a class="headerlink" href="#the-problem-parking-area-control" title="Permalink to this headline">¶</a></h2>
+<p>So, you’ve done the tutorial and are ready for a more complex example.</p>
+<p>We want a data model and a system of menus and forms for controlling the space of a corporate parking area.  The specifications of the system are:</p>
+<ul class="simple">
+<li>There are several parking areas.</li>
+<li>Each parking area has a limited number of parking lots.</li>
+<li>Certain vehicles can only access certain parking areas (during morning or evening).</li>
+<li>Each vehicle is associated to a company and to an individual</li>
+</ul>
+<p>The system monitors the entering and leaving cars by cameras (“devices”) that are installed both into the entrance and the exit of each parking area.  They register license plates of cars and register which car is parked at which parking area.</p>
+</div>
+<div class="section" id="document-schema">
+<h2>Document schema<a class="headerlink" href="#document-schema" title="Permalink to this headline">¶</a></h2>
+<p>The schema and relations for this problem look like this:</p>
+<a class="reference internal image-reference" href="_images/license_plate.svg.png"><img alt="_images/license_plate.svg.png" src="_images/license_plate.svg.png" style="width: 40%;" /></a>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<p>The schema definitions in the example’s <em>DataModel</em> class looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DataModel</span><span class="p">:</span>
+  <span class="o">...</span>
+  <span class="o">...</span>
+
+  <span class="k">def</span> <span class="nf">define</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Define column patterns and collections</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;cute_mongo_forms_example&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collections</span><span class="o">=</span><span class="p">[]</span>
+
+    <span class="k">class</span> <span class="nc">PersonRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;surname&quot;</span><span class="p">,</span><span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Surname&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;phone&quot;</span><span class="p">,</span>  <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Phone Number&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;email&quot;</span><span class="p">,</span>  <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;E-mail&quot;</span><span class="p">)</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">PersonRow</span><span class="o">=</span><span class="n">PersonRow</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">person_collection</span> <span class="o">=</span><span class="n">MongoCollection</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;person&quot;</span><span class="p">,</span> <span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PersonRow</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person_collection</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">CompanyRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Name&quot;</span><span class="p">)</span>
+        <span class="c1"># could add here whatever company data.. address, phone number, etc.</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">CompanyRow</span><span class="o">=</span><span class="n">CompanyRow</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">company_collection</span> <span class="o">=</span><span class="n">MongoCollection</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span><span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;company&quot;</span><span class="p">,</span><span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">CompanyRow</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">company_collection</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">VehicleRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span>   <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;license_plate&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;License Plate&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span>   <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;brand&quot;</span><span class="p">,</span>         <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Brand&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span>   <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;color&quot;</span><span class="p">,</span>         <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Color&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ForeignKeyColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;person_id&quot;</span><span class="p">,</span>  <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">person_collection</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ForeignKeyColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;company_id&quot;</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">company_collection</span><span class="p">)</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">VehicleRow</span><span class="o">=</span><span class="n">VehicleRow</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">vehicle_collection</span> <span class="o">=</span><span class="n">MongoCollection</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span><span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;vehicle&quot;</span><span class="p">,</span><span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">VehicleRow</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle_collection</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">DeviceRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;url&quot;</span><span class="p">,</span>        <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;URL&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span>       <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;User&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Password&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;description&quot;</span><span class="p">,</span><span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Description&quot;</span><span class="p">)</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">DeviceRow</span><span class="o">=</span><span class="n">DeviceRow</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">device_collection</span> <span class="o">=</span><span class="n">MongoCollection</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span><span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span><span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="n">DeviceRow</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device_collection</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">AreaRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>       <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Name&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;description&quot;</span><span class="p">,</span><span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Description&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ListEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;incoming&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Cameras IN&quot;</span><span class="p">,</span>  <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_collection</span><span class="p">,</span>  <span class="n">foreign_label_name</span><span class="o">=</span><span class="s2">&quot;url&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ListEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;outgoing&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Cameras OUT&quot;</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device_collection</span><span class="p">,</span>  <span class="n">foreign_label_name</span><span class="o">=</span><span class="s2">&quot;url&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>      <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Max. vehicles&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ListEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;parked&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Currently parked&quot;</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle_collection</span><span class="p">,</span> <span class="n">foreign_label_name</span><span class="o">=</span><span class="s2">&quot;license_plate&quot;</span><span class="p">)</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">AreaRow</span><span class="o">=</span><span class="n">AreaRow</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">area_collection</span> <span class="o">=</span><span class="n">MongoCollection</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span><span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;area&quot;</span><span class="p">,</span><span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">AreaRow</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">area_collection</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">AreaRightsRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ForeignKeyColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;vehicle_id&quot;</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vehicle_collection</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ForeignKeyColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;area_id&quot;</span><span class="p">,</span>    <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">area_collection</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">CheckBoxColumn</span><span class="p">,</span>   <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;morning&quot;</span><span class="p">,</span>  <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Can park in the morning&quot;</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">CheckBoxColumn</span><span class="p">,</span>   <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;evening&quot;</span><span class="p">,</span>  <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Can park in the evening&quot;</span><span class="p">)</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">AreaRightsRow</span><span class="o">=</span><span class="n">AreaRightsRow</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">area_rights_collection</span> <span class="o">=</span><span class="n">MongoCollection</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span><span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;area_rights&quot;</span><span class="p">,</span><span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">AreaRightsRow</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">area_rights_collection</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">AreaRightsPerCompanyRow</span><span class="p">(</span><span class="n">Row</span><span class="p">):</span>
+      <span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ForeignKeyColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;company_id&quot;</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">company_collection</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">ForeignKeyColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;area_id&quot;</span><span class="p">,</span>    <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">area_collection</span><span class="p">),</span>
+        <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span>   <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;Max. vehicles&quot;</span><span class="p">)</span>
+      <span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">AreaRightsPerCompanyRow</span><span class="o">=</span><span class="n">AreaRightsPerCompanyRow</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">area_rights_per_company_collection</span> <span class="o">=</span><span class="n">MongoCollection</span><span class="p">(</span><span class="n">database_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="p">,</span><span class="n">collection_name</span><span class="o">=</span><span class="s2">&quot;area_rights_per_company&quot;</span><span class="p">,</span><span class="n">row_classes</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">AreaRightsPerCompanyRow</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">area_rights_per_company_collection</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Example</a><ul>
+<li><a class="reference internal" href="#running-the-example">Running the example</a></li>
+<li><a class="reference internal" href="#the-problem-parking-area-control">The problem: parking area control</a></li>
+<li><a class="reference internal" href="#document-schema">Document schema</a></li>
+<li><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial_epi.html"
+                        title="previous chapter">Now what?</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="submodules.html"
+                        title="next chapter">Submodule documentation</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/example.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="submodules.html" title="Submodule documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorial_epi.html" title="Now what?"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2018 Sampsa Riikonen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+    </div>
+  </body>
+</html>

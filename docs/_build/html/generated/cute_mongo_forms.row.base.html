@@ -1,0 +1,236 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cute_mongo_forms.row.base &#8212; cute_mongo_forms 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="cute_mongo_forms.container.base" href="cute_mongo_forms.container.base.html" />
+    <link rel="prev" title="cute_mongo_forms.column.base" href="cute_mongo_forms.column.base.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cute_mongo_forms.container.base.html" title="cute_mongo_forms.container.base"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="cute_mongo_forms.column.base.html" title="cute_mongo_forms.column.base"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../submodules.html" accesskey="U">Submodule documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cute_mongo_forms.row.base">
+<span id="cute-mongo-forms-row-base"></span><h1>cute_mongo_forms.row.base<a class="headerlink" href="#module-cute_mongo_forms.row.base" title="Permalink to this headline">¶</a></h1>
+<p>base.py    : The Row class</p>
+<ul class="simple">
+<li>Copyright: 2017-2018 Sampsa Riikonen</li>
+<li>Authors  : Sampsa Riikonen</li>
+<li>Date     : 2017</li>
+<li>Version  : 0.1</li>
+</ul>
+<p>This file is part of the cute_mongo_forms library</p>
+<p>License: LGPLv3+ (see the COPYING.LESSER file)</p>
+<p class="rubric">Functions</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">dictionaryCheck</span></code>(definitions,&nbsp;dic)</td>
+<td>Checks that dictionary has certain values, according to definitions</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">noCheck</span></code>(obj)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">objectCheck</span></code>(definitions,&nbsp;obj)</td>
+<td>Checks that object has certain attributes, according to definitions</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameterInitCheck</span></code>(definitions,&nbsp;parameters,&nbsp;obj)</td>
+<td>Checks that parameters are consistent with a definition</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">test1</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">test2</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">typeCheck</span></code>(obj,&nbsp;typ)</td>
+<td>Check type of obj, for example: typeCheck(x,int)</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">Column</span></code>(**kwargs)</td>
+<td>Mother class for columns.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColumnSpec</span></code>(column_class,&nbsp;**kwargs)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">LineEditColumn</span></code>(**kwargs)</td>
+<td>Derived from Column.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#cute_mongo_forms.row.base.Row" title="cute_mongo_forms.row.base.Row"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Row</span></code></a>(**kwargs)</td>
+<td>Defines a common columns structure for documents in a [document database] collection.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">RowWatcher</span></code>(name,&nbsp;bases,&nbsp;clsdict)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="cute_mongo_forms.row.base.Row">
+<em class="property">class </em><code class="descclassname">cute_mongo_forms.row.base.</code><code class="descname">Row</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines a common columns structure for documents in a [document database] collection.  The column structure (i.e. “Row”) is defined in the child class header like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">columns</span><span class="o">=</span><span class="p">[</span>
+  <span class="n">ColumnSpec</span><span class="p">(</span><span class="n">LineEditColumn</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;firstname&quot;</span><span class="p">,</span> <span class="n">label_name</span><span class="o">=</span><span class="s2">&quot;First Name&quot;</span><span class="p">),</span>
+  <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>This class knows how to create a Qt form, corresponding to the column structure</p>
+<dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>collection</em>, <em>_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a record</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="cute_mongo_forms.row.base.Row.genKeys">
+<em class="property">classmethod </em><code class="descname">genKeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.genKeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.genKeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called when you declare the class, i.e. at “Class MyNewRow(Row) …”.  It updates the class variables “keys” and “keyset”</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>collection</em>, <em>_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load one entry from db to QtWidgets</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.makeWidget">
+<code class="descname">makeWidget</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.makeWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.makeWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Qt form, using the column structure</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.new">
+<code class="descname">new</code><span class="sig-paren">(</span><em>collection</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>New entry to collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.set_">
+<code class="descname">set_</code><span class="sig-paren">(</span><em>dic</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.set_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.set_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the widget values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>collection</em>, <em>_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save from QtWidgets to collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.updateWidget">
+<code class="descname">updateWidget</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.updateWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.updateWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the widgets.  This is necessary if columns relate to documents that have been changed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="cute_mongo_forms.column.base.html"
+                        title="previous chapter">cute_mongo_forms.column.base</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cute_mongo_forms.container.base.html"
+                        title="next chapter">cute_mongo_forms.container.base</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/cute_mongo_forms.row.base.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cute_mongo_forms.container.base.html" title="cute_mongo_forms.container.base"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="cute_mongo_forms.column.base.html" title="cute_mongo_forms.column.base"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">cute_mongo_forms 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../submodules.html" >Submodule documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2018 Sampsa Riikonen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+    </div>
+  </body>
+</html>
