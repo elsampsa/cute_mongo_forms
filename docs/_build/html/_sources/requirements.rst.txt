@@ -24,7 +24,9 @@ Start also the following system services:
 Developers
 ----------
 
-First, install some :download:`[dependencies]<snippets/requirements.txt>`:
+.. First, install some :download:`[dependencies]<snippets/requirements.txt>`:
+
+First, install some dependencies:
 
 ::
 

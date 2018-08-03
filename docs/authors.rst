@@ -1,4 +1,4 @@
 Authors
 -------
 
-Sampsa Riikonen (sampsa.riikonen@iki.fi)
+`Sampsa Riikonen <http://www.iki.fi/sampsa.riikonen>`_

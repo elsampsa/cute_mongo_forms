@@ -132,14 +132,16 @@ todo_include_todos = True
 # a list of builtin themes.
 
 # html_theme = 'alabaster'
+# html_theme = 'classic'
+html_theme="sphinx_rtd_theme"
 
-# """
+"""
 html_theme = "classic"
 html_theme_options = {
   "rightsidebar": "true",
   "relbarbgcolor": "black"
 }
-# """
+"""
 
 # html_theme = 'haiku'
 
