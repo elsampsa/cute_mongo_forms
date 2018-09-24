@@ -21,7 +21,7 @@ do
 done
 
 # mod python files:
-find -name "*.py" -exec sed -i -r "s/@version (.*)/@version $1 /g" {} \;
+find -name "*.py" -exec sed -i -r "s/\* Version .*/\* Version  : $1 /g" {} \;
 
 echo Dont forget to use ..
 echo
