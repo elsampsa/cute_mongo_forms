@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cute_mongo_forms.row.base &mdash; cute_mongo_forms 0.1 documentation</title>
+  <title>cute_mongo_forms.row.base &mdash; cute_mongo_forms 0.2.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1
+                0.2.0
               </div>
             
           
@@ -259,6 +259,18 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.getName">
+<code class="descname">getName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.getName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a name of this class that can be displayed (instead of just the classname)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.get_column_value">
+<code class="descname">get_column_value</code><span class="sig-paren">(</span><em>col_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.get_column_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.get_column_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a value from one column of the widget</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="cute_mongo_forms.row.base.Row.makeWidget">
 <code class="descname">makeWidget</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.makeWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.makeWidget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Qt form, using the column structure</p>
@@ -274,6 +286,12 @@
 <dt id="cute_mongo_forms.row.base.Row.set_">
 <code class="descname">set_</code><span class="sig-paren">(</span><em>dic</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.set_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.set_" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the widget values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.row.base.Row.set_column_value">
+<code class="descname">set_column_value</code><span class="sig-paren">(</span><em>col_key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/row/base.html#Row.set_column_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.row.base.Row.set_column_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the value of one column in the widget</p>
 </dd></dl>
 
 <dl class="method">
@@ -334,7 +352,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.1',
+            VERSION:'0.2.0',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

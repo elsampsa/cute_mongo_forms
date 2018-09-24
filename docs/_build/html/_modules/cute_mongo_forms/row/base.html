@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cute_mongo_forms.row.base &mdash; cute_mongo_forms 0.1 documentation</title>
+  <title>cute_mongo_forms.row.base &mdash; cute_mongo_forms 0.2.0 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1
+                0.2.0
               </div>
             
           
@@ -210,8 +210,9 @@
 <span class="sd">  </span>
 <span class="sd">  This class knows how to create a Qt form, corresponding to the column structure</span>
 <span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">name</span><span class="o">=</span><span class="kc">None</span> <span class="c1"># if not defined, use classes __name__ attribute</span>
   <span class="n">columns</span><span class="o">=</span><span class="p">[]</span>
-
+  
   <span class="n">parameter_defs</span><span class="o">=</span><span class="p">{}</span>
   
   <span class="n">keys</span><span class="o">=</span><span class="p">[]</span>       <span class="c1"># filled by first call to getKeys</span>
@@ -224,7 +225,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">cls</span><span class="o">.</span><span class="n">keys</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span> <span class="c1"># ColumnSpec instances </span>
-      <span class="bp">cls</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;key_name&quot;</span><span class="p">])</span> <span class="c1"># remember.. ColumnSpec has kwargs thats going to be passed to each column when they&#39;re instantiated.  &quot;key_name&quot; has the name of the column key.</span>
+      <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;key_name&quot;</span> <span class="ow">in</span> <span class="n">col</span><span class="o">.</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;key_name&quot;</span><span class="p">])</span> <span class="c1"># remember.. ColumnSpec has kwargs thats going to be passed to each column when they&#39;re instantiated.  &quot;key_name&quot; has the name of the column key.</span>
     <span class="bp">cls</span><span class="o">.</span><span class="n">keyset</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">keys</span><span class="p">)</span></div>
       
       
@@ -280,8 +282,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
       
       
-      
-  
   <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">+</span><span class="s2">&quot; : &quot;</span> <span class="c1"># auxiliary string for debugging output</span>
     <span class="n">parameterInitCheck</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_defs</span><span class="p">,</span><span class="n">kwargs</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span> <span class="c1"># check kwargs agains parameter_defs, attach ok&#39;d parameters to this object as attributes</span>
@@ -306,6 +306,15 @@
       <span class="bp">self</span><span class="o">.</span><span class="n">columns_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col_instance</span><span class="p">)</span>
       
       
+<div class="viewcode-block" id="Row.getName"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.getName">[docs]</a>  <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a name of this class that can be displayed (instead of just the classname)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span></div>
+    
+
+  
   <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
       <span class="n">column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -314,6 +323,7 @@
       <span class="k">return</span>
     <span class="k">else</span><span class="p">:</span>
       <span class="k">return</span> <span class="n">column</span>
+  
     
     
   <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
@@ -367,7 +377,8 @@
     
   <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-      <span class="n">column</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="c1"># print(self.pre,&quot;clear&quot;,key)</span>
+        <span class="n">column</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
     
     
 <div class="viewcode-block" id="Row.get"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.get">[docs]</a>  <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">collection</span><span class="p">,</span><span class="n">_id</span><span class="p">):</span>
@@ -403,8 +414,20 @@
         <span class="n">column</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
       <span class="k">else</span><span class="p">:</span>
         <span class="n">column</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+        
+        
+<div class="viewcode-block" id="Row.set_column_value"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.set_column_value">[docs]</a>  <span class="k">def</span> <span class="nf">set_column_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col_key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the value of one column in the widget</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="p">[</span><span class="n">col_key</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
     
-   
+    
+<div class="viewcode-block" id="Row.get_column_value"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.get_column_value">[docs]</a>  <span class="k">def</span> <span class="nf">get_column_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col_key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gets a value from one column of the widget</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="p">[</span><span class="n">col_key</span><span class="p">]</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span></div>
+    
+    
 <div class="viewcode-block" id="Row.makeWidget"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.row.base.html#cute_mongo_forms.row.base.Row.makeWidget">[docs]</a>  <span class="k">def</span> <span class="nf">makeWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates a Qt form, using the column structure</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -425,7 +448,11 @@
         <span class="n">column</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">)</span>
         <span class="c1"># add to the layout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">label</span><span class="p">,</span>        <span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">widget</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">widget</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">getNotifySignal</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sig</span><span class="p">):</span>
+          <span class="n">sig</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_notify_slot</span><span class="p">)</span></div>
     
         <span class="c1"># print(self.pre,&quot;makeWidget :&quot;,labelname,label,column.widget)</span>
     
@@ -435,6 +462,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_by_name</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
       <span class="n">column</span><span class="o">.</span><span class="n">updateWidget</span><span class="p">()</span></div>
+    
+    
+  <span class="k">def</span> <span class="nf">update_notify_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># print(self.pre, &quot;update_notify_slot&quot;)</span>
+    <span class="k">pass</span>
     
     
   <span class="k">def</span> <span class="nf">purge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
@@ -528,7 +560,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1',
+            VERSION:'0.2.0',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

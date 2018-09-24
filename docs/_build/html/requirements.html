@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; cute_mongo_forms 0.1 documentation</title>
+  <title>Installation &mdash; cute_mongo_forms 0.2.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1
+                0.2.0
               </div>
             
           
@@ -86,8 +86,6 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html">About this module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#required-packages">Required packages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#developers">Developers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#production-users">Production users</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#test-the-package">Test the package</a></li>
 </ul>
 </li>
@@ -168,45 +166,21 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">mongodb</span><span class="o">-</span><span class="n">server</span> <span class="n">ipython3</span>
 </pre></div>
 </div>
-<p>Start also the following system services:</p>
+<p>If you are going to use mongodb with this library, start also the following system services:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">mongodb</span><span class="o">-</span><span class="n">server</span> <span class="n">start</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="developers">
-<h2>Developers<a class="headerlink" href="#developers" title="Permalink to this headline">¶</a></h2>
-<p>First, install some dependencies:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pymongo</span> <span class="n">pyqt5</span> <span class="n">PySide2</span>
+<p>Install from PyPi with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">cute_mongo_forms</span>
 </pre></div>
 </div>
-<p>Install this package with (assuming $HOME/python3 is on your $PYTHONPATH):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cd ~/python3_packages
-git clone https://github.com/elsampsa/cute_mongo_forms
-cd cute_mongo_forms
-ln -s $PWD/cute_mongo_forms $HOME/python3
+<p>Or from GitHub with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">git</span><span class="o">+</span><span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">elsampsa</span><span class="o">/</span><span class="n">cute_mongo_forms</span>
 </pre></div>
-</div>
-</div>
-<div class="section" id="production-users">
-<span id="production"></span><h2>Production users<a class="headerlink" href="#production-users" title="Permalink to this headline">¶</a></h2>
-<p>Production users should use this command to install the latest version:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">git</span><span class="o">+</span><span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">elsampsa</span><span class="o">/</span><span class="n">cute_mongo_forms</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Pip installation pulls python binary packages that are available at the PyPi repository.  Installation has been tested on Ubuntu 16.04 LTS, x86_64 with Python 3.5.  Should work also on more recent linux versions / setups.</p>
 </div>
 </div>
 <div class="section" id="test-the-package">
 <h2>Test the package<a class="headerlink" href="#test-the-package" title="Permalink to this headline">¶</a></h2>
-<p>Test your dependencies with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipython3</span>
-<span class="kn">import</span> <span class="nn">pymongo</span>
-<span class="kn">import</span> <span class="nn">PyQt5</span>
-<span class="kn">import</span> <span class="nn">PySide2</span>
-</pre></div>
-</div>
 <p>Quicktest the example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ipython3</span>
 <span class="kn">from</span> <span class="nn">cute_mongo_forms.example</span> <span class="k">import</span> <span class="n">main</span>
@@ -258,7 +232,7 @@ ln -s $PWD/cute_mongo_forms $HOME/python3
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1',
+            VERSION:'0.2.0',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

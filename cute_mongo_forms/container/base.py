@@ -15,6 +15,7 @@ import sys
 # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
 from PySide2 import QtWidgets, QtCore, QtGui
 from cute_mongo_forms.tools import typeCheck, dictionaryCheck, objectCheck, parameterInitCheck, noCheck, Namespace
+from cute_mongo_forms.row import RowWatcher
 pre_mod = "container.base : " # a string for aux debugging purposes
 # verbose=False # module's verbosity
 verbose=True
@@ -46,12 +47,18 @@ class List:
     self.widget=QtWidgets.QListWidget()
     
     
+  def createItem(self):
+    """Overwrite in child classes to create custom items (say, sortable items, etc.)
+    """
+    return QtWidgets.QListWidgetItem()
+    
+    
   def update(self):
     # Fills the root and subwidgets with data.
     self.widget.clear()
     self.items_by_id={}
     for entry in self.collection.get():
-      item  =QtWidgets.QListWidgetItem()
+      item  =self.createItem()
       label =self.makeLabel(entry)
       item.setText(label)
       item._id         =entry["_id"]
@@ -97,6 +104,31 @@ class List:
     else:
       self.widget.setCurrentItem(self.items_by_id[_id])
     
+
+
+class SimpleForm:
+    """Embed the widget of a Row into another widget (for including button, extra labels, etc.)
+    """
+  
+    parameter_defs={
+        "row_class" : RowWatcher
+    }
+  
+    def __init__(self, **kwargs):
+        self.pre=self.__class__.__name__+" : " # auxiliary string for debugging output
+        parameterInitCheck(self.parameter_defs,kwargs,self) # check kwargs agains parameter_defs, attach ok'd parameters to this object as attributes
+        self.row_instance = self.row_class()                
+        self.makeWidget()
+        
+  
+    def makeWidget(self):
+        self.widget  = QtWidgets.QWidget()
+        self.lay     = QtWidgets.QVBoxLayout(self.widget)
+        self.row_instance.widget.setParent(self.widget)
+        self.lay.addWidget(self.row_instance.widget)
+        # subclass and continue from here to add buttons, etc
+        
+  
     
 class FormSet:
   """Group of forms.  Each form corresponds to a different Row class.  Only one type of form is visible at a time.
@@ -151,9 +183,15 @@ class FormSet:
     self.form.setAttribute(QtCore.Qt.WA_DeleteOnClose)
     self.form_lay=QtWidgets.QVBoxLayout(self.form)
     for key, row in self.row_instance_by_name.items():
-      if (row.widget!=None):
+      if (row.widget):
         row.widget.setParent(self.form)
         self.form_lay.addWidget(row.widget)
+  
+  
+  def resetForm(self):
+    for key, row in self.row_instance_by_name.items():
+      if (row.widget):
+        row.clear()
   
   
   def updateWidget(self):

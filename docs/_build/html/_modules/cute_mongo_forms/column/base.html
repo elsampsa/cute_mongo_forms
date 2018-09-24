@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cute_mongo_forms.column.base &mdash; cute_mongo_forms 0.1 documentation</title>
+  <title>cute_mongo_forms.column.base &mdash; cute_mongo_forms 0.2.0 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1
+                0.2.0
               </div>
             
           
@@ -232,7 +232,13 @@
 <div class="viewcode-block" id="Column.purge"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.Column.purge">[docs]</a>  <span class="k">def</span> <span class="nf">purge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Check if value is ok for this column.  If update is needed, return (True, updated_value), otherwise (False, original_value)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">value</span></div></div>
+    <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="Column.getNotifySignal"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.Column.getNotifySignal">[docs]</a>  <span class="k">def</span> <span class="nf">getNotifySignal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A notifying signal when this columns contents are changed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span></div></div>
 
   
 <div class="viewcode-block" id="LineEditColumn"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.LineEditColumn">[docs]</a><span class="k">class</span> <span class="nc">LineEditColumn</span><span class="p">(</span><span class="n">Column</span><span class="p">):</span>
@@ -255,6 +261,10 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="LineEditColumn.getNotifySignal"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.LineEditColumn.getNotifySignal">[docs]</a>  <span class="k">def</span> <span class="nf">getNotifySignal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">editingFinished</span></div>
+  
+
 <div class="viewcode-block" id="LineEditColumn.getValue"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.LineEditColumn.getValue">[docs]</a>  <span class="k">def</span> <span class="nf">getValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c1"># Get the value from QtWidget</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">text</span><span class="p">()</span></div>
@@ -269,7 +279,41 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div></div>
     
     
+    
+<div class="viewcode-block" id="LabelColumn"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.LabelColumn">[docs]</a><span class="k">class</span> <span class="nc">LabelColumn</span><span class="p">(</span><span class="n">Column</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Column that does not create a key-value pair.  No data here, just a label</span>
+<span class="sd">  </span>
+<span class="sd">  TODO: experimental, dont use</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">parameter_defs</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">&quot;label_name&quot;</span> <span class="p">:</span> <span class="nb">str</span>
+  <span class="p">}</span>
+  
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pre</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">+</span><span class="s2">&quot; : &quot;</span> <span class="c1"># auxiliary string for debugging output</span>
+    <span class="n">parameterInitCheck</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameter_defs</span><span class="p">,</span><span class="n">kwargs</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span> <span class="c1"># check kwargs agains parameter_defs, attach ok&#39;d parameters to this object as attributes</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">makeWidget</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
+
+<div class="viewcode-block" id="LabelColumn.makeWidget"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.LabelColumn.makeWidget">[docs]</a>  <span class="k">def</span> <span class="nf">makeWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">=</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LabelColumn.getValue"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.LabelColumn.getValue">[docs]</a>  <span class="k">def</span> <span class="nf">getValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># Get the value from QtWidget</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+  
+  
+<div class="viewcode-block" id="LabelColumn.setValue"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.LabelColumn.setValue">[docs]</a>  <span class="k">def</span> <span class="nf">setValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">txt</span><span class="p">):</span>
+    <span class="c1"># Set the value of the QtWidget</span>
+    <span class="k">pass</span></div>
+    
+<div class="viewcode-block" id="LabelColumn.reset"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.LabelColumn.reset">[docs]</a>  <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span></div></div>
+  
+  
+  
 <div class="viewcode-block" id="ComboBoxColumn"><a class="viewcode-back" href="../../../generated/cute_mongo_forms.column.base.html#cute_mongo_forms.column.base.ComboBoxColumn">[docs]</a><span class="k">class</span> <span class="nc">ComboBoxColumn</span><span class="p">(</span><span class="n">Column</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;A Column that can have a finite number of different values.  The possible values are defined in a specific collection that is given as a parameter (let&#39;s call this &quot;foreign collection&quot;).  The element in the QtWidget form corresponding to this column is a drop-down list (e.g. a QComboBox).</span>
 <span class="sd">  </span>
@@ -571,7 +615,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1',
+            VERSION:'0.2.0',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

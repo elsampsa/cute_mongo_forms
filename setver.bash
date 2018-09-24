@@ -16,8 +16,8 @@ echo setting version $1
 fs="MANIFEST.in README.md setup.py $name/* docs/*"
 for f in $fs
 do
-  find $f -exec sed -i -r "s/version = '(.*)'/version = '$1'/g" {} \;
-  find $f -exec sed -i -r "s/release = '(.*)'/release = '$1'/g" {} \;
+  find $f -exec sed -i -r "s/version = '.*'/version = '$1'/g" {} \;
+  find $f -exec sed -i -r "s/release = '.*'/release = '$1'/g" {} \;
 done
 
 # mod python files:

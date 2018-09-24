@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cute_mongo_forms.column.base &mdash; cute_mongo_forms 0.1 documentation</title>
+  <title>cute_mongo_forms.column.base &mdash; cute_mongo_forms 0.2.0 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1
+                0.2.0
               </div>
             
           
@@ -276,6 +276,12 @@
 </tbody>
 </table>
 <dl class="method">
+<dt id="cute_mongo_forms.column.base.Column.getNotifySignal">
+<code class="descname">getNotifySignal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#Column.getNotifySignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.Column.getNotifySignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>A notifying signal when this columns contents are changed</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="cute_mongo_forms.column.base.Column.getValue">
 <code class="descname">getValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#Column.getValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.Column.getValue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the value from QtWidget</p>
@@ -426,9 +432,46 @@
 </dd></dl>
 
 <dl class="class">
+<dt id="cute_mongo_forms.column.base.LabelColumn">
+<em class="property">class </em><code class="descclassname">cute_mongo_forms.column.base.</code><code class="descname">LabelColumn</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#LabelColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.LabelColumn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Column that does not create a key-value pair.  No data here, just a label</p>
+<p>TODO: experimental, dont use</p>
+<dl class="method">
+<dt id="cute_mongo_forms.column.base.LabelColumn.getValue">
+<code class="descname">getValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#LabelColumn.getValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.LabelColumn.getValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value from QtWidget</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.column.base.LabelColumn.makeWidget">
+<code class="descname">makeWidget</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#LabelColumn.makeWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.LabelColumn.makeWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>For child classes, set the QtWidget here</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.column.base.LabelColumn.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#LabelColumn.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.LabelColumn.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the column to its default empty value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cute_mongo_forms.column.base.LabelColumn.setValue">
+<code class="descname">setValue</code><span class="sig-paren">(</span><em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#LabelColumn.setValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.LabelColumn.setValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of the QtWidget</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="cute_mongo_forms.column.base.LineEditColumn">
 <em class="property">class </em><code class="descclassname">cute_mongo_forms.column.base.</code><code class="descname">LineEditColumn</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#LineEditColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.LineEditColumn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Derived from Column.  Unrestricted input text.</p>
+<dl class="method">
+<dt id="cute_mongo_forms.column.base.LineEditColumn.getNotifySignal">
+<code class="descname">getNotifySignal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#LineEditColumn.getNotifySignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.LineEditColumn.getNotifySignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>A notifying signal when this columns contents are changed</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="cute_mongo_forms.column.base.LineEditColumn.getValue">
 <code class="descname">getValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#LineEditColumn.getValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.LineEditColumn.getValue" title="Permalink to this definition">¶</a></dt>
@@ -561,7 +604,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.1',
+            VERSION:'0.2.0',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -14,7 +14,8 @@ License: LGPLv3+ (see the COPYING.LESSER file)
 import sys
 import copy
 import os
-import pickle
+# import pickle
+import json
 import time
 from cute_mongo_forms.tools import typeCheck, dictionaryCheck, objectCheck, parameterInitCheck, noCheck
 from cute_mongo_forms.db.base import Collection
@@ -35,21 +36,31 @@ class SimpleCollection(Collection):
     self.pre=self.__class__.__name__+" : " # auxiliary string for debugging output
     parameterInitCheck(self.parameter_defs,kwargs,self) # check kwargs agains parameter_defs, attach ok'd parameters to this object as attributes
     if (os.path.exists(self.filename)):
-      f=open(self.filename,"br")
-      self.lis=pickle.load(f)
-      # print(self.pre,"loaded",self.lis)
-      f.close()
+        """
+        f=open(self.filename,"br")
+        self.lis=pickle.load(f)
+        # print(self.pre,"loaded",self.lis)
+        f.close()
+        """
+        f=open(self.filename,"r")
+        self.lis=json.loads(f.read())
+        f.close()
     else:
-      self.clear()
-    
+        self.clear()
+
     
   def clear(self):
     self.lis=[] # All data of this "database" is here. :)
     
     
   def save(self):
+    """
     f=open(self.filename,"bw")
     pickle.dump(self.lis,f)
+    f.close()
+    """
+    f=open(self.filename,"w")
+    f.write(json.dumps(self.lis))
     f.close()
     
     

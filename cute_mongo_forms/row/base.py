@@ -57,8 +57,9 @@ class Row(metaclass=RowWatcher):
   
   This class knows how to create a Qt form, corresponding to the column structure
   """
+  name=None # if not defined, use classes __name__ attribute
   columns=[]
-
+  
   parameter_defs={}
   
   keys=[]       # filled by first call to getKeys
@@ -71,7 +72,8 @@ class Row(metaclass=RowWatcher):
     """
     cls.keys=[]
     for col in cls.columns: # ColumnSpec instances 
-      cls.keys.append(col.kwargs["key_name"]) # remember.. ColumnSpec has kwargs thats going to be passed to each column when they're instantiated.  "key_name" has the name of the column key.
+      if ("key_name" in col.kwargs):
+        cls.keys.append(col.kwargs["key_name"]) # remember.. ColumnSpec has kwargs thats going to be passed to each column when they're instantiated.  "key_name" has the name of the column key.
     cls.keyset=set(cls.keys)
       
       
@@ -127,8 +129,6 @@ class Row(metaclass=RowWatcher):
     """
       
       
-      
-  
   def __init__(self,**kwargs):
     self.pre=self.__class__.__name__+" : " # auxiliary string for debugging output
     parameterInitCheck(self.parameter_defs,kwargs,self) # check kwargs agains parameter_defs, attach ok'd parameters to this object as attributes
@@ -153,6 +153,15 @@ class Row(metaclass=RowWatcher):
       self.columns_.append(col_instance)
       
       
+  def getName(self):
+    """Return a name of this class that can be displayed (instead of just the classname)
+    """
+    if self.__class__.name:
+      return self.__class__.name
+    return self.__class__.__name__
+    
+
+  
   def __getattr__(self,key):
     try:
       column=self.column_by_name[key]
@@ -161,6 +170,7 @@ class Row(metaclass=RowWatcher):
       return
     else:
       return column
+  
     
     
   def __getitem__(self,key):
@@ -214,7 +224,8 @@ class Row(metaclass=RowWatcher):
     
   def clear(self):
     for key, column in self.column_by_name.items():
-      column.reset()
+        # print(self.pre,"clear",key)
+        column.reset()
     
     
   def get(self,collection,_id):
@@ -250,8 +261,20 @@ class Row(metaclass=RowWatcher):
         column.reset()
       else:
         column.setValue(val)
+        
+        
+  def set_column_value(self, col_key, value):
+    """Sets the value of one column in the widget
+    """
+    self.column_by_name[col_key].setValue(value)
     
-   
+    
+  def get_column_value(self, col_key):
+    """Gets a value from one column of the widget
+    """
+    return self.column_by_name[col_key].getValue()
+    
+    
   def makeWidget(self):
     """Creates a Qt form, using the column structure
     """
@@ -274,6 +297,10 @@ class Row(metaclass=RowWatcher):
         self.lay.addWidget(label,        i,0)
         self.lay.addWidget(column.widget,i,1)
     
+        sig = column.getNotifySignal()
+        if (sig):
+          sig.connect(self.update_notify_slot)
+    
         # print(self.pre,"makeWidget :",labelname,label,column.widget)
     
     
@@ -282,6 +309,11 @@ class Row(metaclass=RowWatcher):
     """
     for key, column in self.column_by_name.items():
       column.updateWidget()
+    
+    
+  def update_notify_slot(self):
+    # print(self.pre, "update_notify_slot")
+    pass
     
     
   def purge(self, dic):

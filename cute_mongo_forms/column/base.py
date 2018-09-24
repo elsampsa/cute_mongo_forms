@@ -81,6 +81,12 @@ class Column:
     """
     return False, value
 
+
+  def getNotifySignal(self):
+    """A notifying signal when this columns contents are changed
+    """
+    return None
+
   
 class LineEditColumn(Column):
   """Derived from Column.  Unrestricted input text.
@@ -102,6 +108,10 @@ class LineEditColumn(Column):
     self.widget=QtWidgets.QLineEdit()
 
 
+  def getNotifySignal(self):
+    return self.widget.editingFinished
+  
+
   def getValue(self):
     # Get the value from QtWidget
     return self.widget.text()
@@ -116,7 +126,41 @@ class LineEditColumn(Column):
     self.setValue("")
     
     
+    
+class LabelColumn(Column):
+  """Column that does not create a key-value pair.  No data here, just a label
+  
+  TODO: experimental, dont use
+  """
+  parameter_defs={
+    "label_name" : str
+  }
+  
+  def __init__(self,**kwargs):
+    self.pre=self.__class__.__name__+" : " # auxiliary string for debugging output
+    parameterInitCheck(self.parameter_defs,kwargs,self) # check kwargs agains parameter_defs, attach ok'd parameters to this object as attributes
+    self.makeWidget()
+    self.reset()
 
+
+  def makeWidget(self):
+    self.widget=QtWidgets.QLabel(self.label_name)
+
+
+  def getValue(self):
+    # Get the value from QtWidget
+    return None
+  
+  
+  def setValue(self,txt):
+    # Set the value of the QtWidget
+    pass
+    
+  def reset(self):
+    pass
+  
+  
+  
 class ComboBoxColumn(Column):
   """A Column that can have a finite number of different values.  The possible values are defined in a specific collection that is given as a parameter (let's call this "foreign collection").  The element in the QtWidget form corresponding to this column is a drop-down list (e.g. a QComboBox).
   
