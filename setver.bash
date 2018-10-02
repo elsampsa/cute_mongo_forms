@@ -4,7 +4,7 @@ if [ $# -ne 1 ]; then
   # echo "Give version and release in quotation marks, like this:"
   # echo '"0" "1"'
   echo "Give version name in quotation marks, like this:"
-  echo '"1.0"'
+  echo '"1.0.2"'
   exit
 fi
 

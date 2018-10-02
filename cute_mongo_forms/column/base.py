@@ -4,7 +4,7 @@ base.py    : Basic column classes
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.2 
+* Version  : 0.2.1 
 
 This file is part of the cute_mongo_forms library
 
@@ -287,7 +287,8 @@ class CheckBoxColumn(Column):
   # define here, where the foreign key is mapped..
   parameter_defs={
     "key_name"   : str,  # name of the database key in key(value)
-    "label_name" : str   # used to create the forms
+    "label_name" : str,  # used to create the forms
+    "def_value"  : (bool, False)
     }
   
   
@@ -313,7 +314,7 @@ class CheckBoxColumn(Column):
     
     
   def reset(self):
-    self.setValue(False)
+    self.setValue(self.def_value)
 
 
 

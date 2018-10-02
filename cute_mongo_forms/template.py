@@ -4,7 +4,7 @@ NAME.py : Description of the file
 * Copyright: 2017 [copyright holder]
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.2 
+* Version  : 0.2.1 
 
 This file is part of the cute_mongo_forms library
 

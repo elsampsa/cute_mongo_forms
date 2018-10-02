@@ -4,7 +4,7 @@ string.py : Columns for restricted string data (ip addresses etc.)
 * Copyright: 2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.2 
+* Version  : 0.2.1 
 
 This file is part of the cute_mongo_forms library
 
