@@ -75,9 +75,9 @@ author = 'Sampsa Riikonen'
 # built documents.
 #
 # The short X.Y version
-version = '0.2.1' # WARNING: modified by setver.bash
+version = '0.2.2' # WARNING: modified by setver.bash
 # The full version, including alpha/beta/rc tags.
-release = '0.2.1' # WARNING: modified by setver.bash
+release = '0.2.2' # WARNING: modified by setver.bash
 
 
 

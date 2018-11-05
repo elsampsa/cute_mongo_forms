@@ -4,7 +4,7 @@ tools.py : tool functions
 * Copyright : 2017 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.2.1 
+* Version  : 0.2.2 
 
 This file is part of the python cute_mongo_forms example library
 
