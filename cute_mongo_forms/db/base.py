@@ -43,7 +43,7 @@ class Collection:
     if (set(cls.keys)==set(dic)):
       pass
     else:
-      raise AssertionError("Class columns="+str(cls.keys)+" not equal to keys="+str(dic.keys()))
+      raise AssertionError("Class columns="+str(cls.keys)+" not equal to keys="+str(dic.keys())+" diff=", set(cls.keys).symmetric_difference(set(dic)))
     
     
   def update(self,cls,dic):
