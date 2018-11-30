@@ -4,7 +4,7 @@ base.py    : The Row class
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.2.2 
+* Version  : 0.2.3 
 
 This file is part of the cute_mongo_forms library
 

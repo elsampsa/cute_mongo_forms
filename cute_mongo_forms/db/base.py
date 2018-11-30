@@ -4,7 +4,7 @@ base.py    : Database base classes
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.2.2 
+* Version  : 0.2.3 
 
 This file is part of the cute_mongo_forms library
 
@@ -28,12 +28,13 @@ class Collection:
   def __init__(self,**kwargs):
     self.pre=self.__class__.__name__+" : " # auxiliary string for debugging output
     parameterInitCheck(self.parameter_defs,kwargs,self) # check kwargs agains parameter_defs, attach ok'd parameters to this object as attributes
-
+    self.row_classes_by_name={}
+    for row_class in self.row_classes:
+        self.row_classes_by_name[row_class.__name__]=row_class
 
   def getRowClasses(self):
     return self.row_classes
-  
-  
+    
   def new(self,cls,dic):
     """New entry.  A class instance (cls) is required (base class: Row)
     """
@@ -44,7 +45,11 @@ class Collection:
       pass
     else:
       raise AssertionError("Class columns="+str(cls.keys)+" not equal to keys="+str(dic.keys())+" diff=", set(cls.keys).symmetric_difference(set(dic)))
-    
+  
+  
+  def newByClassname(self, name, dic):
+      self.new(self.row_classes_by_name[name], dic)
+      
     
   def update(self,cls,dic):
     """Substitute element from list with same "_id"

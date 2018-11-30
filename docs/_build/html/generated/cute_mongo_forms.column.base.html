@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cute_mongo_forms.column.base &mdash; cute_mongo_forms 0.2 documentation</title>
+  <title>cute_mongo_forms.column.base &mdash; cute_mongo_forms 0.2.3 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2
+                0.2.3
               </div>
             
           
@@ -168,7 +168,7 @@
 <li>Copyright: 2017-2018 Sampsa Riikonen</li>
 <li>Authors  : Sampsa Riikonen</li>
 <li>Date     : 2018</li>
-<li>Version  : 0.2</li>
+<li>Version  : 0.2.3</li>
 </ul>
 <p>This file is part of the cute_mongo_forms library</p>
 <p>License: LGPLv3+ (see the COPYING.LESSER file)</p>
@@ -236,6 +236,12 @@
 <dt id="cute_mongo_forms.column.base.CheckBoxColumn">
 <em class="property">class </em><code class="descclassname">cute_mongo_forms.column.base.</code><code class="descname">CheckBoxColumn</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#CheckBoxColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.CheckBoxColumn" title="Permalink to this definition">¶</a></dt>
 <dd><p>A column having a Qt checkbox and true/false value.</p>
+<dl class="method">
+<dt id="cute_mongo_forms.column.base.CheckBoxColumn.getNotifySignal">
+<code class="descname">getNotifySignal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#CheckBoxColumn.getNotifySignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.CheckBoxColumn.getNotifySignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>A notifying signal when this columns contents are changed</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="cute_mongo_forms.column.base.CheckBoxColumn.getValue">
 <code class="descname">getValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cute_mongo_forms/column/base.html#CheckBoxColumn.getValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cute_mongo_forms.column.base.CheckBoxColumn.getValue" title="Permalink to this definition">¶</a></dt>
@@ -334,7 +340,7 @@
 <span class="o">--------------------</span>          <span class="o">------------------</span>
 <span class="n">_id</span>                     <span class="o">+---&gt;</span> <span class="n">_id</span>
 <span class="n">key1</span>                    <span class="o">|</span>     <span class="n">label</span>
-<span class="n">key2</span>            <span class="o">--------+</span>  
+<span class="n">key2</span>            <span class="o">--------+</span>
 <span class="n">key2</span>
 <span class="o">--------------------</span>          <span class="o">------------------</span>
 </pre></div>
@@ -507,7 +513,7 @@
 <span class="o">--------------------</span>          <span class="o">------------------</span>
 <span class="n">_id</span>                     <span class="o">+---&gt;</span> <span class="n">_id</span>
 <span class="n">key1</span>                    <span class="o">|</span>     <span class="n">label</span>
-<span class="n">key2</span><span class="p">:</span> <span class="n">a</span> <span class="nb">list</span>   <span class="o">--------+</span>  
+<span class="n">key2</span><span class="p">:</span> <span class="n">a</span> <span class="nb">list</span>   <span class="o">--------+</span>
 <span class="n">key2</span>
 <span class="o">--------------------</span>          <span class="o">------------------</span>
 </pre></div>
@@ -604,7 +610,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2',
+            VERSION:'0.2.3',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

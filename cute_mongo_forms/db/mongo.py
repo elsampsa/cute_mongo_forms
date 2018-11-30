@@ -4,7 +4,7 @@ mongo.py   : Database interface for MongoDB
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.2.2 
+* Version  : 0.2.3 
 
 This file is part of the cute_mongo_forms library
 
@@ -36,6 +36,10 @@ class MongoCollection(Collection):
     self.client    =pymongo.MongoClient()
     self.db        =self.client[self.database_name]
     self.collection=self.db[self.collection_name]
+    self.row_classes_by_name={}
+    for row_class in self.row_classes:
+        self.row_classes_by_name[row_class.__name__]=row_class
+
     
     
   def removeDB(self):

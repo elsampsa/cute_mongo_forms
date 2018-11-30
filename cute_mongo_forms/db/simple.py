@@ -4,7 +4,7 @@ simple.py  : A simple test database where the document collection is just a pyth
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.2.2 
+* Version  : 0.2.3 
 
 This file is part of the cute_mongo_forms library
 
@@ -48,6 +48,11 @@ class SimpleCollection(Collection):
     else:
         self.clear()
 
+    self.row_classes_by_name={}
+    for row_class in self.row_classes:
+        self.row_classes_by_name[row_class.__name__]=row_class
+
+
     
   def clear(self):
     self.lis=[] # All data of this "database" is here. :)
@@ -69,6 +74,7 @@ class SimpleCollection(Collection):
     
     
   def new(self,cls,dic):
+    dic=copy.copy(dic)
     super().new(cls,dic)
     dic["_id"]      =int(time.time()*1000000) # microsecond timestamp
     dic["classname"]=cls.__name__
