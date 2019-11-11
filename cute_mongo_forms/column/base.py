@@ -4,7 +4,7 @@ base.py    : Basic column classes
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.2.3 
+* Version  : 0.3.0
 
 This file is part of the cute_mongo_forms library
 
@@ -28,8 +28,10 @@ class Column:
     """
 
     parameter_defs = {
-        "key_name": str,  # name of the database key in key(value)
-        "label_name": str   # used to create the forms
+        "key_name"          : str,  # name of the database key in key(value)
+        "label_name"        : str,   # used to create the forms
+        "label_alignment"   : None, # QtCore.Qt.AlignTop
+        "label_size_policy" : None # QtWidgets.QSizePolicy()
     }
 
     def __init__(self, **kwargs):
@@ -38,8 +40,15 @@ class Column:
         # check kwargs agains parameter_defs, attach ok'd parameters to this
         # object as attributes
         parameterInitCheck(self.parameter_defs, kwargs, self)
+        # self.initExtraPars()
         self.makeWidget()
         self.reset()
+
+    """
+    def initExtraPars(self):
+        self.label_alignment = None
+        self.label_size_policy = None
+    """
 
     def makeWidget(self):
         """For child classes, set the QtWidget here
@@ -85,11 +94,9 @@ class Column:
 class LineEditColumn(Column):
     """Derived from Column.  Unrestricted input text.
     """
-
     parameter_defs = {
-        "key_name": str,  # name of the database key in key(value)
-        "label_name": str   # used to create the forms
-    }
+        }
+    parameter_defs.update(Column.parameter_defs)
 
     def __init__(self, **kwargs):
         # auxiliary string for debugging output
@@ -126,6 +133,8 @@ class LabelColumn(Column):
     parameter_defs = {
         "label_name": str
     }
+    parameter_defs.update(Column.parameter_defs)
+
 
     def __init__(self, **kwargs):
         # auxiliary string for debugging output
@@ -179,19 +188,19 @@ class ComboBoxColumn(Column):
     # define here, where the foreign key is mapped..
     parameter_defs = {
         "collection": None,
-        "key_name": str,  # name of the database key in key(value)
-        "label_name": str,  # used to create the forms
         # label corresponding to this foreign key
         "foreign_label_name": (str, "label"),
         # by default, use the object id as the foreign key
         "foreign_key_name": (str, "_id")
     }
+    parameter_defs.update(Column.parameter_defs)
 
     def __init__(self, **kwargs):
         # auxiliary string for debugging output
         self.pre = self.__class__.__name__ + " : "
         # check kwargs agains parameter_defs, attach ok'd parameters to this
         # object as attributes
+        
         parameterInitCheck(self.parameter_defs, kwargs, self)
         self.makeWidget()
         self.reset()
@@ -204,6 +213,7 @@ class ComboBoxColumn(Column):
         self.widget.clear()
         it = self.collection.get()
         for i, item in enumerate(it):
+            # print("ComboBoxColumn: updateWidget: item", item)
             self.widget.insertItem(i,
                                    item[self.foreign_label_name],
                                    item[self.foreign_key_name])
@@ -221,6 +231,7 @@ class ComboBoxColumn(Column):
         # findData returns -1
         # setCurrentIndex(-1) sets the selection to void
         i = self.widget.findData(foreign_key)
+        # print("ComboBoxColumn: setValue:", foreign_key, i)
         self.widget.setCurrentIndex(i)
 
     def reset(self):
@@ -228,7 +239,8 @@ class ComboBoxColumn(Column):
 
 
 class ForeignKeyColumn(Column):
-    """A column that is a foreign key, referenced by another collection.  Does not create any visible widget into forms.  Basically, creates a key-value pair in the collection Row schema.  Does not know anything about mapping the key to a foreign table.
+    """A column that is a foreign key, referenced by another collection.  Does not create any visible widget into forms.  
+    Basically, creates a key-value pair in the collection Row schema.  Does not know anything about mapping the key to a foreign table.
 
     Parameters at instantiation:
 
@@ -241,7 +253,10 @@ class ForeignKeyColumn(Column):
         "key_name": str,        # database key in key(value)
         "collection": None,       # the "foreign" collection,
         # by default, use the object id as the foreign key
-        "foreign_key_name": (str, "_id")
+        "foreign_key_name": (str, "_id"),
+
+        "label_alignment"   : None, # QtCore.Qt.AlignTop
+        "label_size_policy" : None # QtWidgets.QSizePolicy()
     }
 
     def __init__(self, **kwargs):
@@ -274,10 +289,9 @@ class CheckBoxColumn(Column):
 
     # define here, where the foreign key is mapped..
     parameter_defs = {
-        "key_name": str,  # name of the database key in key(value)
-        "label_name": str,  # used to create the forms
         "def_value": (bool, False)
     }
+    parameter_defs.update(Column.parameter_defs)
     
     class Signals(QtCore.QObject):
         notify = QtCore.Signal()
@@ -287,6 +301,7 @@ class CheckBoxColumn(Column):
         self.pre = self.__class__.__name__ + " : "
         # check kwargs agains parameter_defs, attach ok'd parameters to this
         # object as attributes
+        
         parameterInitCheck(self.parameter_defs, kwargs, self)
         self.signals = self.Signals()
         self.makeWidget()
@@ -346,19 +361,20 @@ class ListEditColumn(Column):
     # define here, where the foreign key is mapped..
     parameter_defs = {
         "collection": None,
-        "key_name": str,  # name of the database key in key(value)
-        "label_name": str,  # used to create the forms
         # label corresponding to this foreign key
         "foreign_label_name": (str, "label"),
         # by default, use the object id as the foreign key
         "foreign_key_name": (str, "_id")
     }
+    parameter_defs.update(Column.parameter_defs)
+
 
     def __init__(self, **kwargs):
         # auxiliary string for debugging output
         self.pre = self.__class__.__name__ + " : "
         # check kwargs agains parameter_defs, attach ok'd parameters to this
         # object as attributes
+        
         parameterInitCheck(self.parameter_defs, kwargs, self)
         self.makeWidget()
         self.reset()

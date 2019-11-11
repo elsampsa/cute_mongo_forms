@@ -75,9 +75,9 @@ author = 'Sampsa Riikonen'
 # built documents.
 #
 # The short X.Y version
-version = '0.2.3' # WARNING: modified by setver.bash
+version = '0.3.0' # WARNING: modified by setver.bash
 # The full version, including alpha/beta/rc tags.
-release = '0.2.3' # WARNING: modified by setver.bash
+version = '0.3.0' # WARNING: modified by setver.bash
 
 
 
@@ -131,9 +131,9 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-# html_theme = 'alabaster'
+html_theme = 'alabaster'
 # html_theme = 'classic'
-html_theme="sphinx_rtd_theme"
+# html_theme="sphinx_rtd_theme" # does not work anymore?
 
 """
 html_theme = "classic"

@@ -4,7 +4,7 @@ tools.py : tool functions
 * Copyright : 2017 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.2.3 
+* Version  : 0.3.0
 
 This file is part of the python cute_mongo_forms example library
 
@@ -130,12 +130,12 @@ def parameterInitCheck(definitions, parameters, obj):
   |"height"  : int,                     # parameter height **must** be defined by the user
   |"indexer" : some_module.Indexer,     # parameter indexer must of some user-defined class some_module.Indexer
   |"cleaner" : checkAttribute_cleaner,  # parameter cleaner is check by a custom function named "checkAttribute_cleaner" (that's been defined before)
-  |"weird"   : None                     # parameter weird is passed without any checking - this means that your API is broken  :)
+  |"weird"   : None                     # parameter weird is passed without any checking. Can be defined .. or not.  If not, set to None
   | }
   
   """
   definitions=copy.copy(definitions)
-  #print("parameterInitCheck: definitions=",definitions)
+  print("parameterInitCheck: definitions=",definitions)
   for key in parameters:
     try:
       definition=definitions.pop(key) 
@@ -176,8 +176,10 @@ def parameterInitCheck(definitions, parameters, obj):
     definition=definitions[key]
     if (definition.__class__==tuple):   # a tuple defining (parameter_class, default value)
         setattr(obj,key,definition[1])
-    else:
+    elif definition is not None:
       raise(AttributeError("Missing a mandatory parameter "+key))
+    else:
+        setattr(obj,key,None)
     
     
 def noCheck(obj):

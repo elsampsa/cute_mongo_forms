@@ -4,7 +4,7 @@ base.py    : The Row class
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.2.3 
+* Version  : 0.3.0
 
 This file is part of the cute_mongo_forms library
 
@@ -317,11 +317,22 @@ class Row(metaclass=RowWatcher):
         for key in self.column_by_name:
         print(self.pre,"makeWidget: >>",key)
         """
+        """
+        policy = QtWidgets.QSizePolicy()
+        policy.setVerticalPolicy(QtWidgets.QSizePolicy.Minimum)
+        """
         for i, column in enumerate(self.columns_):
             if (column.widget is not None):
                 #"""
                 labelname = column.label_name
                 label = QtWidgets.QLabel(labelname, self.widget)
+                if column.label_alignment is not None:
+                    label.setAlignment(column.label_alignment)
+                if column.label_size_policy is not None:
+                    label.setSizePolicy(column.label_size_policy)
+                    
+                # label.setAlignment(QtCore.Qt.AlignTop)
+                # label.setSizePolicy(policy)
                 column.widget.setParent(self.widget)
                 # add to the layout
                 self.lay.addWidget(label, i, 0)

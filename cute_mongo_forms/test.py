@@ -4,7 +4,7 @@ NAME.py : Description of the file
 * Copyright: 2017 [copyright holder]
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.2.3 
+* Version  : 0.3.0
 
 This file is part of the cute_mongo_forms library
 
@@ -16,7 +16,7 @@ import sys
 # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
 from PySide2 import QtWidgets, QtCore, QtGui
 from cute_mongo_forms.tools import typeCheck, dictionaryCheck, objectCheck, parameterInitCheck, noCheck
-from cute_mongo_forms.column import LineEditColumn, ComboBoxColumn, ForeignKeyColumn, CheckBoxColumn
+from cute_mongo_forms.column import LineEditColumn, ComboBoxColumn, ForeignKeyColumn, CheckBoxColumn, ConstantComboBoxColumn, ConstantRadioButtonColumn
 from cute_mongo_forms.row import ColumnSpec, Row
 from cute_mongo_forms.container import List, FormSet, EditFormSet, PermissionFormSet
 from cute_mongo_forms.db import SimpleCollection
@@ -208,71 +208,99 @@ class TestGui4(MyGui):
     
     
 class TestGui5(MyGui):
-  """Left: list of records.  Right: details of the records, editable.  Records have a reference to a list of accepted car manufacturers
-  """
-  # LineEditColumn(field_name="firstname",label_name="First Name", ..)
-  # ComboBoxColum(collection=.., key_column_name=..,field_name=..,label_name="Car model")
-  
-  
-  def initVars(self):
-    self.collection=SimpleCollection(filename="simple_test.db")
-    it=self.collection.get()
-    for i in it:
-      print(">>",i)
-    
-    self.side_collection=SimpleCollection(filename="simple_side.db")
-    self.side_collection.clear()
-    self.side_collection.new({"label":"Ford"})
-    self.side_collection.new({"label":"Audi"})
-    
-    
-  def setupUi(self):
-    super().setupUi()
-    
-    # we need self.side_collection, hence the definitions here
-    class TestRow_(Row):
-      columns=[
-        ColumnSpec(LineEditColumn, key_name="firstname", label_name="First Name"),
-        ColumnSpec(LineEditColumn, key_name="secondname",label_name="Second Name"),
-        ColumnSpec(LineEditColumn, key_name="surname",   label_name="Surname"),
-        ColumnSpec(ComboBoxColumn, key_name="address",   label_name="Address", collection=self.side_collection)
-      ]
-      
-      
-    class TestList_(List):
-      def makeLabel(self,entry):
-        return entry["firstname"]+" "+entry["surname"]
+    """Left: list of records.  Right: details of the records, editable.  Records have a reference to a list of accepted car manufacturers
+    """
+    # LineEditColumn(field_name="firstname",label_name="First Name", ..)
+    # ComboBoxColum(collection=.., key_column_name=..,field_name=..,label_name="Car model")
 
-    class TestFormSet_(FormSet):  
-      row_classes=[
-        TestRow,
-        TestRow_,
+    def setupUi(self):    
+        super().setupUi()
+
+        class AddresRow(Row):
+            columns =[
+                ColumnSpec(LineEditColumn, key_name="address", label_name="Address")
+            ]
+
+        self.side_collection=SimpleCollection(filename="simple_side.db", row_classes = [AddresRow])
+        """
+        self.side_collection.clear()
+        self.side_collection.new(AddresRow, {"address":"Main Street"})
+        self.side_collection.new(AddresRow, {"address":"Side Street"})
+        """
+
+        def get_devices():
+            return [
+                ("Sda device", "/dev/sda"),
+                ("Sdb device", "/dev/sdb")
+            ]
+
+        multichoice = [
+            ("Choice 1", "eka"),
+            ("Choice 2", "toka")
         ]
-  
-    class TestEditFormSet_(EditFormSet):
-      row_classes=[
-        TestRow,
-        TestRow_
-        ]
+        mc_label = "MultiChoice"
+        # mc_label = ""
+
+        class TestRow_(Row):
+            columns=[
+                ColumnSpec(LineEditColumn, key_name="firstname", label_name="First Name"),
+                ColumnSpec(LineEditColumn, key_name="secondname",label_name="Second Name"),
+                ColumnSpec(LineEditColumn, key_name="surname",   label_name="Surname"),
+                ColumnSpec(ComboBoxColumn, key_name="address",   label_name="Address", collection = self.side_collection, foreign_label_name = "address"),
+                ColumnSpec(ConstantComboBoxColumn, 
+                                           key_name = "device",    label_name = "Device", callback = get_devices),
+                ColumnSpec(ConstantRadioButtonColumn, 
+                                           key_name = "multichoice",    label_name = mc_label, list = multichoice)
+                # foreigh_label_name = which key is taken for the drop-down list
+            ]
         
+        # TODO: see that initial values are loaded correctly from the db
+        # TODO: ConstantRadioButtonColumn: rewrite createWidget
+
+        self.collection = SimpleCollection(filename="simple_test.db", row_classes = [TestRow_])
+        it=self.collection.get()
+        for i in it:
+            print(">>",i)
     
-    self.lis=TestList_(collection=self.collection)
-    self.lis.widget.setParent(self.w)
-    self.lay.addWidget(self.lis.widget)
     
-    self.formset=TestEditFormSet_(collection=self.collection)
-    self.formset.widget.setParent(self.w)
-    self.lay.addWidget(self.formset.widget)
+        class TestList_(List):
+            def makeLabel(self,entry):
+                return entry["firstname"]+" "+entry["surname"]
+
+
+        class TestFormSet_(FormSet):  
+            row_classes=[
+                TestRow,
+                TestRow_,
+                ]
+
+
+        class TestEditFormSet_(EditFormSet):
+            row_classes=[
+                TestRow,
+                TestRow_
+                ]
+                
     
-    self.lis.widget.     currentItemChanged.connect(self.formset.chooseForm_slot) # inform formset about the item in question
-    self.formset.signals.new_record.        connect(self.lis.update_slot)         # inform list that a new entry has been added
-      
-      
-  def closeEvent(self,e):
-    print("close event!")
-    self.collection.close()
-    e.accept()
-  
+        self.lis=TestList_(collection=self.collection)    
+        self.formset=TestEditFormSet_(collection=self.collection)
+    
+        self.lis.widget.setParent(self.w)
+        self.lay.addWidget(self.lis.widget)
+        
+        self.formset.widget.setParent(self.w)
+        self.lay.addWidget(self.formset.widget)
+        
+        self.lis.widget.     currentItemChanged.connect(self.formset.chooseForm_slot) # inform formset about the item in question
+        self.formset.signals.new_record.        connect(self.lis.update_slot)         # inform list that a new entry has been added
+        
+        
+    def closeEvent(self,e):
+        print("close event!")
+        self.collection.close()
+        self.side_collection.close()
+        e.accept()
+    
   
 class TestGui6(MyGui):
   """Left: list of records (users).  Right: list of cards.  Rightmost: user rights.

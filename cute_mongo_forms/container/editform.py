@@ -4,7 +4,7 @@ editform.py : Yet more editable forms
 * Copyright: 2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.2.3 
+* Version  : 0.3.0
 
 This file is part of the cute_mongo_forms library
 
