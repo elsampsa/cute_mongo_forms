@@ -4,7 +4,7 @@ constant.py : Constant columns.  For example, a ComboBoxColumn with predefined v
 * Copyright: 2019 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2019
-* Version  : 0.3.0
+* Version  : 0.4.0
 
 This file is part of the cute_mongo_forms library
 
@@ -81,6 +81,15 @@ class ConstantComboBoxColumn(Column):
                 value
             )
         """
+        self.widget.clear()
+        lis = self.getList()
+        for i, (label, value) in enumerate(lis):
+            self.widget.insertItem(i,
+                label,
+                value
+            )
+
+
 
     def getValue(self):
         # Get the value from QtWidget
@@ -161,6 +170,10 @@ class ConstantRadioButtonColumn(Column):
             self.radio_buttons_by_value[value] = rb
             self.sublay.addWidget(rb)
         self.updateWidget()
+
+
+    def __getitem__(self, key):
+        return self.radio_buttons_by_value[key]
 
 
     def updateWidget(self):

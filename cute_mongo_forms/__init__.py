@@ -1,3 +1,7 @@
+from cute_mongo_forms.version import version_tag
+
+__version__ = version_tag
+
 __all__=["column","row"]
 
 from .column import *

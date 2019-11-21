@@ -4,7 +4,7 @@ numeric.py : Columns for numeric data
 * Copyright: 2018 [copyright holder]
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.3.0
+* Version  : 0.4.0
 
 This file is part of the cute_mongo_forms library
 
@@ -40,7 +40,12 @@ class IntegerColumn(LineEditColumn):
 
     def getValue(self):
         # Get the value from QtWidget
-        return int(self.widget.text())
+        try:
+            i = int(self.widget.text())
+        except Exceptions as e:
+            print("IntegerColumn: getValue: failed with", e) 
+            i = self.min_value
+        return i
 
     def setValue(self, i: int):
         # Set the value of the QtWidget
@@ -49,6 +54,42 @@ class IntegerColumn(LineEditColumn):
 
     def reset(self):
         self.setValue(self.def_value)
+
+
+class SpinBoxIntegerColumn(Column):
+    """Resticted integer column
+    """
+
+    parameter_defs = {
+        "key_name": str,  # name of the database key in key(value)
+        "label_name": str,  # used to create the forms
+        "min_value": (int, 0),
+        "max_value": (int, 65536),
+        "def_value": (int, 0)
+    }
+    parameter_defs.update(Column.parameter_defs)
+
+    def makeWidget(self):
+        # self.validator = QtGui.QIntValidator(self.min_value, self.max_value)
+        self.widget = QtWidgets.QSpinBox()
+        self.widget.setMinimum(self.min_value)
+        self.widget.setMaximum(self.max_value)
+        self.widget.setValue(self.def_value)
+        # self.widget.setValidator(self.validator)
+
+    def getValue(self):
+        # Get the value from QtWidget
+        return self.widget.value()
+
+    def setValue(self, i: int):
+        # Set the value of the QtWidget
+        assert(isinstance(i, int))
+        self.widget.setValue(i)
+
+    def reset(self):
+        self.setValue(self.def_value)
+
+
 
 
 class ConstantIntegerColumn(IntegerColumn):
