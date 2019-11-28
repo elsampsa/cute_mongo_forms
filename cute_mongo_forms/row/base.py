@@ -4,7 +4,7 @@ base.py    : The Row class
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.4.0
+* Version  : 0.5.0
 
 This file is part of the cute_mongo_forms library
 
@@ -144,6 +144,7 @@ class Row(metaclass=RowWatcher):
     def initColumns(self):
         # find class variables ..
         self.column_by_name = collections.OrderedDict()
+        self.qlabel_by_name = collections.OrderedDict()
         # self.columns_=[] # list of tuples: name, label, instance
         self.columns_ = []  # now just a list of column instances
 
@@ -278,6 +279,7 @@ class Row(metaclass=RowWatcher):
         
         label = QtWidgets.QLabel(labelname, self.widget)
         column.widget.setParent(self.widget)
+        self.qlabel_by_name[column.key_name] = label
         # add to the layout
         self.lay.addWidget(label, i, 0)
         self.lay.addWidget(column.widget, i, 1)
@@ -326,6 +328,7 @@ class Row(metaclass=RowWatcher):
                 #"""
                 labelname = column.label_name
                 label = QtWidgets.QLabel(labelname, self.widget)
+                self.qlabel_by_name[column.key_name] = label
                 if column.label_alignment is not None:
                     label.setAlignment(column.label_alignment)
                 if column.label_size_policy is not None:
@@ -341,7 +344,25 @@ class Row(metaclass=RowWatcher):
                 # self.placeWidget(i, column.key_name)
                 # print(self.pre,"makeWidget :",labelname,label,column.widget)
                 
+                # print("column visible", column.visible, column.label_name)
+                if column.visible == False:
+                    qlabel.setVisible(False)
+                    column.widget.setVisible(False)
+
         self.connectNotifications()
+
+
+    def getWidgets(self, key):
+        """Returns both QLabel and the column widget, corresponding to a column.  Works only after makeWidget's been called
+        """
+        return self.qlabel_by_name[key], self.column_by_name[key].widget
+
+    def setVisible(self, key, value):
+        """Works only after makeWidget's been called
+        """
+        # print("setVisible",self.qlabel_by_name)
+        self.qlabel_by_name[key].setVisible(value) 
+        self.column_by_name[key].widget.setVisible(value)
 
     def updateWidget(self):
         """Updates the widgets.  This is necessary if columns relate to documents that have been changed.
