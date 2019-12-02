@@ -4,7 +4,7 @@ base.py    : Basic column classes
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.5.0
+* Version  : 0.6.0
 
 This file is part of the cute_mongo_forms library
 
@@ -28,10 +28,10 @@ class Column:
     """
 
     parameter_defs = {
-        "key_name"          : str,  # name of the database key in key(value)
-        "label_name"        : str,  # used to create the forms
-        "label_alignment"   : None, # QtCore.Qt.AlignTop
-        "label_size_policy" : None, # QtWidgets.QSizePolicy()
+        "key_name"          : str,           # name of the database key in key(value)
+        "label_name"        : (str,"none"),  # used to create the forms
+        "label_alignment"   : None,          # QtCore.Qt.AlignTop
+        "label_size_policy" : None,          # QtWidgets.QSizePolicy()
         "visible"           : (bool, True)
     }
 
@@ -251,7 +251,7 @@ class ForeignKeyColumn(Column):
     """
 
     parameter_defs = {
-        "key_name": str,        # database key in key(value)
+        "key_name": str,          # database key in key(value)
         "collection": None,       # the "foreign" collection,
         # by default, use the object id as the foreign key
         "foreign_key_name": (str, "_id"),

@@ -4,7 +4,7 @@ simple.py  : A simple test database where the document collection is just a pyth
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.5.0
+* Version  : 0.6.0
 
 This file is part of the cute_mongo_forms library
 
@@ -17,6 +17,7 @@ import os
 # import pickle
 import json
 import time
+from pprint import pformat
 from cute_mongo_forms.tools import typeCheck, dictionaryCheck, objectCheck, parameterInitCheck, noCheck
 from cute_mongo_forms.db.base import Collection
 pre_mod = "db.simple : " # a string for aux debugging purposes
@@ -123,9 +124,10 @@ class SimpleCollection(Collection):
   
   def __str__(self):
     st="-------------\n"
-    for l in self.lis:
-      st+=str(l)+"\n"
-    st+="-------------\n"  
+    #for l in self.lis:
+    #  st+=str(l)+"\n"
+    st += pformat(self.lis)
+    st+="\n-------------\n"  
     return st
 
     

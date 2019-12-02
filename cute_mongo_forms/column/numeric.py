@@ -4,7 +4,7 @@ numeric.py : Columns for numeric data
 * Copyright: 2018 [copyright holder]
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.5.0
+* Version  : 0.6.0
 
 This file is part of the cute_mongo_forms library
 

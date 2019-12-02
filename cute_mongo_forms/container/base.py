@@ -4,7 +4,7 @@ base.py    : Base/example classes for containers (lists, forms, etc.).  Containe
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.5.0
+* Version  : 0.6.0
 
 This file is part of the cute_mongo_forms library
 
