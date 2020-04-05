@@ -4,7 +4,7 @@ string.py : Columns for restricted string data (ip addresses etc.)
 * Copyright: 2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.6.0
+* Version  : 0.7.0
 
 This file is part of the cute_mongo_forms library
 
@@ -50,3 +50,58 @@ class IPv4AddressColumn(LineEditColumn):
 
     def reset(self):
         self.setValue(self.def_value)
+
+
+
+class FileDialogColumn(LineEditColumn):
+    """Opens a file dialog
+    """
+    parameter_defs = {
+        "key_name"   : str,  # name of the database key in key(value)
+        "label_name" : str,  # used to create the forms
+        "def_value"  : (str, ""),
+        "filter"     : str
+    }
+    parameter_defs.update(Column.parameter_defs)
+
+    def makeWidget(self):
+        self.widget = QtWidgets.QWidget()
+        self.lay = QtWidgets.QHBoxLayout(self.widget)
+
+        self.line = QtWidgets.QLineEdit(self.widget)
+        self.line.setReadOnly(True)
+
+        self.button = QtWidgets.QPushButton("Choose", self.widget)
+        self.lay.addWidget(self.line)
+        self.lay.addWidget(self.button)
+
+        self.button.clicked.connect(self.open_dialog_slot)
+
+
+    def open_dialog_slot(self):
+        fname = QtWidgets.QFileDialog.getOpenFileName(filter = self.filter)[0]
+        if not fname:
+            pass
+        else:
+            self.setValue(fname)
+
+
+    def getNotifySignal(self):
+        return self.line.editingFinished
+
+
+    def getValue(self):
+        # Get the value from QtWidget
+        return self.line.text()
+
+
+    def setValue(self, txt):
+        # Set the value of the QtWidget
+        self.line.setText(str(txt))
+
+
+    def reset(self):
+        self.setValue(self.def_value)
+
+
+

@@ -4,7 +4,7 @@ base.py    : Basic column classes
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.6.0
+* Version  : 0.7.0
 
 This file is part of the cute_mongo_forms library
 

@@ -2,7 +2,7 @@ from setuptools import setup, Extension, find_packages
 import sys
 
 # the following line is modified by setver.bash
-version = '0.6.0'
+version = '0.7.0'
 
 setup(
     name = "cute_mongo_forms",
