@@ -2,14 +2,15 @@ from setuptools import setup, Extension, find_packages
 import sys
 
 # the following line is modified by setver.bash
-version = '0.7.0'
+version = '0.7.1'
 
 setup(
     name = "cute_mongo_forms",
     version = version,
     install_requires = [
         "pymongo>=3.6",
-        "PySide2>=5.11.1"
+        # "PySide2>=5.11.1",
+        'PySide2 == 5.13.2' # 5.13.2+ is again OK
     ],
 
     packages = find_packages(), # # includes python code from every directory that has an "__init__.py" file in it.  If no "__init__.py" is found, the directory is omitted.  Other directories / files to be included, are defined in the MANIFEST.in file
