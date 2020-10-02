@@ -4,7 +4,7 @@ base.py    : Basic column classes
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2018
-* Version  : 0.7.1
+* Version  : 0.7.3
 
 This file is part of the cute_mongo_forms library
 
@@ -13,7 +13,7 @@ License: LGPLv3+ (see the COPYING.LESSER file)
 
 import sys
 # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
-from PySide2 import QtWidgets, QtCore, QtGui
+from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui, Signal, Slot
 from cute_mongo_forms.tools import typeCheck, dictionaryCheck, objectCheck, parameterInitCheck, noCheck
 # a string for aux debuggin purposes
 pre_mod = "cute_mongo_forms.column.base : "
@@ -296,7 +296,7 @@ class CheckBoxColumn(Column):
     parameter_defs.update(Column.parameter_defs)
     
     class Signals(QtCore.QObject):
-        notify = QtCore.Signal()
+        notify = Signal()
 
     def __init__(self, **kwargs):
         # auxiliary string for debugging output

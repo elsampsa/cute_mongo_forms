@@ -4,7 +4,7 @@ editform.py : Yet more editable forms
 * Copyright: 2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.7.1
+* Version  : 0.7.3
 
 This file is part of the cute_mongo_forms library
 
@@ -13,7 +13,7 @@ License: LGPLv3+ (see the COPYING.LESSER file)
 
 import sys
 # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
-from PySide2 import QtWidgets, QtCore, QtGui
+from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui, Signal, Slot
 from cute_mongo_forms.tools import typeCheck, dictionaryCheck, objectCheck, parameterInitCheck, noCheck
 from cute_mongo_forms.container.base import FormSet
 
@@ -30,8 +30,8 @@ class EditFormSet2(FormSet):
     - new_record(object) : emitted when a new record has been added.  Carries the record _id.
     - save_record(object): emitted when a record has been saved.  Carries the record _id.
     """
-    save_record  =QtCore.Signal(object) # emitted when a record has been saved
-    modified     =QtCore.Signal(object) # emitted when one of the above has been triggered
+    save_record  =Signal(object) # emitted when a record has been saved
+    modified     =Signal(object) # emitted when one of the above has been triggered
   
   
   def makeWidget(self):

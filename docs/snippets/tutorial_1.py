@@ -5,7 +5,7 @@ Let's start by importing all necesary modules.
 <rtf>"""
 import sys
 # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
-from PySide2 import QtWidgets, QtCore, QtGui # Qt5
+from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui # Qt5
 from cute_mongo_forms.column import LineEditColumn
 from cute_mongo_forms.row import ColumnSpec, Row
 from cute_mongo_forms.db import SimpleCollection

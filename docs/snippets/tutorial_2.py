@@ -3,7 +3,7 @@ In this lesson, we create a database, write a few entries to it, and see the dat
 <rtf>"""
 import sys
 # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
-from PySide2 import QtWidgets, QtCore, QtGui
+from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui
 from cute_mongo_forms.column import LineEditColumn
 from cute_mongo_forms.row import ColumnSpec, Row
 from cute_mongo_forms.container import List

@@ -22,7 +22,7 @@ In the user interface, user can choose a person and a car and grant user rights 
 
     import sys
     # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
-    from PySide2 import QtWidgets, QtCore, QtGui
+    from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui
     from cute_mongo_forms.column import LineEditColumn, ComboBoxColumn, ForeignKeyColumn, CheckBoxColumn
     from cute_mongo_forms.row import ColumnSpec, Row
     from cute_mongo_forms.container import List, FormSet, EditFormSet, PermissionFormSet

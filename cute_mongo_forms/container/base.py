@@ -4,7 +4,7 @@ base.py    : Base/example classes for containers (lists, forms, etc.).  Containe
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.7.1
+* Version  : 0.7.3
 
 This file is part of the cute_mongo_forms library
 
@@ -13,7 +13,7 @@ License: LGPLv3+ (see the COPYING.LESSER file)
 
 import sys
 # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
-from PySide2 import QtWidgets, QtCore, QtGui
+from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui, Signal, Slot
 from cute_mongo_forms.tools import typeCheck, dictionaryCheck, objectCheck, parameterInitCheck, noCheck, Namespace
 from cute_mongo_forms.row import RowWatcher
 pre_mod = "container.base : " # a string for aux debugging purposes
@@ -308,10 +308,10 @@ class EditFormSet(FormSet):
     delete_record=QtCore.pyqtSignal(object) # emitted when a record has been deleted
     modified     =QtCore.pyqtSignal(object) # emitted when one of the above has been triggered
     """
-    new_record   =QtCore.Signal(object) # emitted when a new record has been added.  Sends the object id
-    save_record  =QtCore.Signal(object) # emitted when a record has been saved
-    delete_record=QtCore.Signal(object) # emitted when a record has been deleted
-    modified     =QtCore.Signal(object) # emitted when one of the above has been triggered
+    new_record   =Signal(object) # emitted when a new record has been added.  Sends the object id
+    save_record  =Signal(object) # emitted when a record has been saved
+    delete_record=Signal(object) # emitted when a record has been deleted
+    modified     =Signal(object) # emitted when one of the above has been triggered
   
   
   def makeWidget(self):

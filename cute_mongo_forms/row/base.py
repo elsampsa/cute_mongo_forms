@@ -4,7 +4,7 @@ base.py    : The Row class
 * Copyright: 2017-2018 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.7.1
+* Version  : 0.7.3
 
 This file is part of the cute_mongo_forms library
 
@@ -12,7 +12,7 @@ License: LGPLv3+ (see the COPYING.LESSER file)
 """
 
 # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
-from PySide2 import QtWidgets, QtCore, QtGui
+from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui
 import sys
 import copy
 import collections
@@ -76,6 +76,20 @@ class Row(metaclass=RowWatcher):
                 # name of the column key.
                 cls.keys.append(col.kwargs["key_name"])
         cls.keyset = set(cls.keys)
+
+
+    @classmethod
+    def getDefaults(cls):
+        dic = {}
+        for col in cls.columns:  # ColumnSpec instances
+            key = col.kwargs["key_name"]
+            if "def_value" in col.kwargs:
+                value = col.kwargs["def_value"]
+            else:
+                value = None
+            dic[key] = value
+        return dic
+
 
     @classmethod
     def genChecker(cls):

@@ -4,7 +4,7 @@ NAME.py : Description of the file
 * Copyright: 2017 [copyright holder]
 * Authors  : Sampsa Riikonen
 * Date     : 2017
-* Version  : 0.7.1
+* Version  : 0.7.3
 
 This file is part of the cute_mongo_forms library
 
@@ -14,7 +14,7 @@ This file is part of the cute_mongo_forms library
 import sys
 # import pymongo
 # from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
-from PySide2 import QtWidgets, QtCore, QtGui
+from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui
 from cute_mongo_forms.tools import typeCheck, dictionaryCheck, objectCheck, parameterInitCheck, noCheck
 from cute_mongo_forms.column import LineEditColumn, ComboBoxColumn, ForeignKeyColumn, CheckBoxColumn, ConstantComboBoxColumn, ConstantRadioButtonColumn
 from cute_mongo_forms.row import ColumnSpec, Row

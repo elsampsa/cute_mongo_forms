@@ -1,6 +1,6 @@
 import sys
-# from PyQt5 import QtWidgets, QtCore, QtGui # Qt5
-from PySide2 import QtWidgets, QtCore, QtGui
+# import PyQt5 ## enable this line to use PyQt5, otherwise the program will default to PySide2
+from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui
 from cute_mongo_forms.column import LineEditColumn, ListEditColumn, CheckBoxColumn
 from cute_mongo_forms.row import ColumnSpec, Row
 from cute_mongo_forms.container import List, FormSet, EditFormSet

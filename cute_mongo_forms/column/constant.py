@@ -4,7 +4,7 @@ constant.py : Constant columns.  For example, a ComboBoxColumn with predefined v
 * Copyright: 2019 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 2019
-* Version  : 0.7.1
+* Version  : 0.7.3
 
 This file is part of the cute_mongo_forms library
 
@@ -12,7 +12,7 @@ License: LGPLv3+ (see the COPYING.LESSER file)
 """
 
 import sys
-from PySide2 import QtWidgets, QtCore, QtGui
+from cute_mongo_forms.qt import QtWidgets, QtCore, QtGui
 from cute_mongo_forms.column.base import Column
 from cute_mongo_forms.tools import typeCheck, dictionaryCheck, objectCheck, parameterInitCheck, noCheck
 pre_mod = __name__ # a string for aux debuggin purposes
